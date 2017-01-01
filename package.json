@@ -1,0 +1,21 @@
+{
+  "name": "xibleWrapper",
+  "version": "0.0.1",
+  "dependencies": {
+    "ws": "*"
+  },
+  "devDependencies": {
+    "browserify": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-stage-0": "*",
+    "gulp": "*",
+    "gulp-babel": "*",
+    "vinyl-source-stream": "*",
+    "gulp-nodemon": "*",
+    "gulp-rename": "*"
+  },
+  "browser": {
+    "ws": "./shim/ws.js"
+  },
+  "private": true
+}
