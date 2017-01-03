@@ -21,11 +21,11 @@ module.exports = function(XIBLE) {
 			}
 
 			this.removeAllListeners();
-
+/*
 			if (!this._id) {
 				this._id = XIBLE.generateObjectId();
 			}
-
+*/
 			//setup viewstate
 			this.viewState = {
 				left: obj && obj.viewState && obj.viewState.left ? obj.viewState.left : 0,
@@ -154,7 +154,7 @@ module.exports = function(XIBLE) {
 					req = new OoHttpRequest('PUT', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}`);
 				}
 
-				req.toObject(Object).then((json) => {
+				req.toObject(Object, json).then((json) => {
 
 					this._id = json._id;
 					resolve(this);
