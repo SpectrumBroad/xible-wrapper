@@ -41,9 +41,6 @@ module.exports = function(XIBLE) {
 			if (this[type] && (endConnectorIndex = this[type].connectors.indexOf(this)) > -1) {
 
 				this[type].connectors.splice(endConnectorIndex, 1);
-				this[type].node.removeListener('position', this.originDrawFn);
-
-				//trigger detachment
 				this[type].emit('detach', this);
 
 			}

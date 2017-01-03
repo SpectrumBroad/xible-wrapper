@@ -15,6 +15,8 @@ module.exports = function(XIBLE) {
 				Object.assign(this, obj);
 			}
 
+			this.removeAllListeners();
+
 			this.connectors = [];
 
 			if (!this._id) {
@@ -56,7 +58,7 @@ module.exports = function(XIBLE) {
 
 			if (this.singleType) {
 
-				this.on('editorAttach', (conn) => {
+				this.on('attach', (conn) => {
 
 					let connLoc = conn[this instanceof Input ? 'origin' : 'destination'];
 					if (connLoc.type) {
@@ -65,7 +67,7 @@ module.exports = function(XIBLE) {
 
 				});
 
-				this.on('editorDetach', function() {
+				this.on('detach', function() {
 
 					if (!this.connectors.length) {
 						this.setType(null);

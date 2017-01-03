@@ -13,6 +13,8 @@ module.exports = function(XIBLE) {
 				Object.assign(this, obj);
 			}
 
+			this.removeAllListeners();
+
 			if (!this._id) {
 				this._id = XIBLE.generateObjectId();
 			}
