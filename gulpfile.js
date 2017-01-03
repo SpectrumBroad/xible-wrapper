@@ -5,7 +5,6 @@ const transform = require('vinyl-source-stream');
 const nodemon = require('gulp-nodemon');
 const rename = require('gulp-rename');
 
-
 gulp.task('browserify', () => {
 
 	return browserify('index.js', {
@@ -17,16 +16,18 @@ gulp.task('browserify', () => {
 
 });
 
-
-gulp.task('toGlow', ['browserify'], () => {
+gulp.task('toXibleEditor', ['browserify'], () => {
 
 	return gulp.src('dist/index.js')
-		.pipe(rename('XibleWrapper.js'))
-		.pipe(gulp.dest('../glow/static/shared/js/'));
+		.pipe(rename('xibleWrapper.js'))
+		.pipe(gulp.dest('../xible/editor/js/'));
 
 });
 
-
 gulp.task('start', () => {
-	gulp.watch(['*.js'], ['toGlow']);
+	gulp.watch(['*.js'], ['browserify']);
+});
+
+gulp.task('xibleeditor', () => {
+	gulp.watch(['*.js'], ['toXibleEditor']);
 });

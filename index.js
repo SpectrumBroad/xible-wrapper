@@ -4,9 +4,8 @@
 //require a WebSocket module for nodejs
 const WebSocket = require('ws');
 
-
-const HttpRequest = require('../HttpRequest');
-const EventEmitter = require('events').EventEmitter;
+const OoHttpRequest = require('../oohttprequest');
+let EventEmitter = require('events').EventEmitter;
 
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -33,6 +32,11 @@ class XibleWrapper extends EventEmitter {
 		this.socketServer = null;
 
 		this.Flow = require('./Flow.js')(this);
+		this.Node = require('./Node.js')(this);
+		this.NodeIo = require('./Io.js')(this);
+		this.NodeInput = require('./Input.js')(this);
+		this.NodeOutput = require('./Output.js')(this);
+		this.Connector = require('./Connector.js')(this);
 
 	}
 
@@ -52,27 +56,31 @@ class XibleWrapper extends EventEmitter {
 		return 3;
 	}
 
+	generateObjectId() {
+
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000)
+				.toString(16)
+				.substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+			s4() + '-' + s4() + s4() + s4();
+
+	}
+
 	setToken(token) {
 
 		this.token = token;
-		HttpRequest.defaults.headers['x-access-token'] = this.token;
+		OoHttpRequest.defaults.headers['x-access-token'] = this.token;
 
 	}
 
 	getHostPorts() {
 
-		/*
-				let req = new HttpRequest('GET', `https://${this.hostname}:${this.port}/server`);
-				return req.toObject(Object).then((obj) => {
-					this.socketServer = obj.socketServer;
-				});
-				*/
-
-		this.socketServer = {
-			"port": 9601
-		};
-
-		return Promise.resolve();
+		let req = new OoHttpRequest('GET', `https://${this.hostname}:${this.port}/server`);
+		return req.toObject(Object).then((obj) => {
+			this.socketServer = obj.socketServer;
+		});
 
 	}
 

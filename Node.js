@@ -1,16 +1,58 @@
 module.exports = function(XIBLE) {
 
-	const HttpRequest = require('../HttpRequest');
+	const OoHttpRequest = require('../oohttprequest');
 	const EventEmitter = require('events').EventEmitter;
 
 	class Node extends EventEmitter {
 
-		constructor(obj) {
+		constructor(obj = {}, ignoreData = false) {
 
 			super();
 
 			if (obj) {
 				Object.assign(this, obj);
+			}
+
+			if (!this._id) {
+				this._id = XIBLE.generateObjectId();
+			}
+
+			//copy data
+			this.data = null;
+			if (obj.data && !ignoreData) {
+				this.data = Object.assign({}, obj.data);
+			} else {
+				this.data = {};
+			}
+
+			//add inputs
+			this.initInputs(obj.inputs);
+
+			//add outputs
+			this.initOutputs(obj.outputs);
+
+			this.setPosition(obj.left, obj.top);
+
+		}
+
+		initInputs(inputs) {
+
+			this.inputs = {};
+			if (inputs) {
+				for (let name in inputs) {
+					this.addInput(new XIBLE.NodeInput(name, inputs[name]));
+				}
+			}
+
+		}
+
+		initOutputs(outputs) {
+
+			this.outputs = {};
+			if (outputs) {
+				for (let name in outputs) {
+					this.addOutput(new XIBLE.NodeOutput(name, outputs[name]));
+				}
 			}
 
 		}
@@ -43,6 +85,15 @@ module.exports = function(XIBLE) {
 
 		}
 
+		//TODO: hook this up to XibleFlow where it belongs
+		getAllGlobals() {
+
+			return this.flow.nodes.filter((node) => {
+				return node.getOutputs().some((output) => output.global);
+			});
+
+		}
+
 		setData(attr, value) {
 
 			if (typeof value === 'undefined') {
@@ -62,78 +113,68 @@ module.exports = function(XIBLE) {
 
 		getEditorContent() {
 
-			let req = new HttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/${this.name}/editor/index.htm`);
-			return req.send();
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/${this.name}/editor/index.htm`);
+			return req.toString();
 
 		}
 
-		setPosition(left, top) {
+		setPosition(left = 0, top = 0) {
 
-			this.left = left || 0;
-			this.top = top || 0;
+			this.left = left;
+			this.top = top;
 
 			this.emit('position', this);
 
 		}
 
-		duplicate() {
+		addInput(input) {
 
-			var duplicateNode = new Node(this);
+			this.addIo(input);
+			this.inputs[input.name] = input;
 
-			//create a unique id for the node
-			duplicateNode._id = FluxEditor.generateObjectId();
-
-			//create a unique id for the inputs
-			for (let name in duplicateNode.inputs) {
-				duplicateNode.inputs[name]._id = FluxEditor.generateObjectId();
-			}
-
-			//create a unique id for the outputs
-			for (let name in duplicateNode.outputs) {
-				duplicateNode.outputs[name]._id = FluxEditor.generateObjectId();
-			}
-
-			return duplicateNode;
+			return input;
 
 		}
 
-		appendIo(child) {
+		addOutput(output) {
 
-			if (child instanceof NodeIo) {
+			this.addIo(output);
+			this.outputs[output.name] = output;
 
-				child.node = this;
-
-				if (!child._id) {
-					child._id = FluxEditor.generateObjectId();
-				}
-
-				if (child instanceof NodeInput) {
-					this.inputs[child.name] = child;
-				} else {
-					this.outputs[child.name] = child;
-				}
-
-				child.node = this;
-				return child;
-
-			}
+			return output;
 
 		}
 
-		removeIo(child) {
+		addIo(child) {
 
-			if (child instanceof NodeIo) {
+			child.node = this;
 
-				if (child instanceof NodeInput) {
-					delete this.inputs[child.name];
-				} else {
-					delete this.outputs[child.name];
-				}
-
-				child.node = null;
-				return child;
-
+			if (!child._id) {
+				child._id = XIBLE.generateObjectId();
 			}
+
+			child.node = this;
+			return child;
+
+		}
+
+		deleteInput(input) {
+
+			this.deleteIo(input);
+			delete this.inputs[child.name];
+			input.node = null;
+
+			return input;
+
+		}
+
+		deleteOutput(output) {
+
+			this.deleteIo(output);
+			delete this.outputs[child.name];
+			output.node = null;
+
+			return output;
 
 		}
 

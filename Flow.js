@@ -1,6 +1,6 @@
 module.exports = function(XIBLE) {
 
-	const HttpRequest = require('../HttpRequest');
+	const OoHttpRequest = require('../oohttprequest');
 	const EventEmitter = require('events').EventEmitter;
 
 	const Connector = require('./Connector')(XIBLE);
@@ -12,17 +12,59 @@ module.exports = function(XIBLE) {
 
 			super();
 
+			this._id = null;
+			this.runnable = true;
+			this.running = false;
+
 			if (obj) {
 				Object.assign(this, obj);
 			}
 
-			this.nodes = this.nodes.map((node) => new Node(node));
-			this.connectors = this.connectors.map((conn) => {
+			if (!this._id) {
+				this._id = XIBLE.generateObjectId();
+			}
+
+			//setup viewstate
+			this.viewState = {
+				left: obj && obj.viewState && obj.viewState.left ? obj.viewState.left : 0,
+				top: obj && obj.viewState && obj.viewState.top ? obj.viewState.top : 0,
+				zoom: obj && obj.viewState && obj.viewState.zoom ? obj.viewState.zoom : 1,
+				backgroundLeft: obj && obj.viewState && obj.viewState.backgroundLeft ? obj.viewState.backgroundLeft : 0,
+				backgroundTop: obj && obj.viewState && obj.viewState.backgroundTop ? obj.viewState.backgroundTop : 0
+			};
+
+			//setup nodes
+			if (obj && obj.nodes) {
+				this.initNodes(obj.nodes);
+			} else {
+				this.nodes = [];
+			}
+
+			//setup connectors
+			if (obj && obj.connectors) {
+				this.initConnectors(obj.connectors);
+			} else {
+				this.connectors = [];
+			}
+
+		}
+
+		initNodes(nodes) {
+
+			this.nodes = [];
+			nodes.forEach((node) => this.addNode(new Node(node)));
+
+		}
+
+		initConnectors(connectors) {
+
+			this.connectors = [];
+			connectors.forEach((conn) => {
 
 				conn.origin = this.getOutputById(conn.origin);
 				conn.destination = this.getInputById(conn.destination);
 
-				return new Connector(conn);
+				this.addConnector(new Connector(conn));
 
 			});
 
@@ -30,18 +72,35 @@ module.exports = function(XIBLE) {
 
 		static getById(id) {
 
-			let req = new HttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${id}`);
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${id}`);
 			return req.toObject(Flow);
+
+		}
+
+		static getAll() {
+
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows`);
+			return req.toObject(Object).then((flows) => {
+
+				Object.keys(flows).forEach((flowId) => {
+					flows[flowId] = new Flow(flows[flowId]);
+				});
+
+				return flows;
+
+			});
 
 		}
 
 		stop() {
 
+			this.undirect();
+
 			if (!this._id) {
 				return Promise.reject(`no id`);
 			}
 
-			let req = new HttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}/stop`);
+			let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}/stop`);
 			this.emit('stop');
 
 			return req.send();
@@ -50,11 +109,13 @@ module.exports = function(XIBLE) {
 
 		start() {
 
+			this.undirect();
+
 			if (!this._id) {
 				return Promise.reject(`no id`);
 			}
 
-			let req = new HttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}/start`);
+			let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}/start`);
 			this.emit('start');
 
 			return req.send();
@@ -63,14 +124,16 @@ module.exports = function(XIBLE) {
 
 		delete() {
 
+			this.undirect();
+
 			if (!this._id) {
 				return;
 			}
 
-			let req = new HttpRequest('DELETE', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}`);
-			req.send();
-
+			let req = new OoHttpRequest('DELETE', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}`);
 			this.emit('delete');
+
+			return req.send();
 
 		}
 
@@ -84,12 +147,12 @@ module.exports = function(XIBLE) {
 				let req;
 
 				if (!this._id) {
-					req = new HttpRequest('POST', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows`);
+					req = new OoHttpRequest('POST', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows`);
 				} else {
-					req = new HttpRequest('PUT', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}`);
+					req = new OoHttpRequest('PUT', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}`);
 				}
 
-				req.toJson(json, (json) => {
+				req.toObject(Object).then((json) => {
 
 					this._id = json._id;
 					resolve(this);
@@ -145,9 +208,8 @@ module.exports = function(XIBLE) {
 					};
 				});
 
-				let req = new HttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}/direct`);
-
-				req.toJson(JSON.stringify(nodes), (json) => {
+				let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}/direct`);
+				req.toString(nodes).then((json) => {
 
 					resolve(this);
 					this._lastDirectPromise = null;
@@ -167,7 +229,7 @@ module.exports = function(XIBLE) {
 		toJson(nodes, connectors) {
 
 			//the nodes
-			const nodeWhitelist = ['_id', 'name', 'type', 'left', 'top', 'inputs', 'outputs', 'hidden', 'global'];
+			const NODE_WHITE_LIST = ['_id', 'name', 'type', 'left', 'top', 'inputs', 'outputs', 'hidden', 'global'];
 			var dataObject, inputsObject, outputsObject;
 			var nodeJson = JSON.stringify(nodes || this.nodes, function(key, value) {
 
@@ -190,7 +252,7 @@ module.exports = function(XIBLE) {
 
 					default:
 
-						if (this !== inputsObject && this !== outputsObject && this !== dataObject && key && isNaN(key) && nodeWhitelist.indexOf(key) === -1) {
+						if (this !== inputsObject && this !== outputsObject && this !== dataObject && key && isNaN(key) && NODE_WHITE_LIST.indexOf(key) === -1) {
 							return;
 						} else {
 							return value;
@@ -235,8 +297,49 @@ module.exports = function(XIBLE) {
 			return this.nodes.find((node) => node._id === id);
 		}
 
+		addConnector(connector) {
+
+			if (connector.flow) {
+				throw new Error(`connector already hooked up to other flow`);
+			}
+
+			this.connectors.push(connector);
+			connector.flow = this;
+			return connector;
+
+		}
+
+		deleteConnector(connector) {
+
+			let index = this.connectors.indexOf(connector);
+			if (index > -1) {
+				this.connectors.splice(index, 1);
+			}
+			connector.flow = null;
+
+		}
+
+		addNode(node) {
+
+			if (node.flow) {
+				throw new Error(`node already hooked up to other flow`);
+			}
+
+			this.nodes.push(node);
+			node.flow = this;
+
+			return node;
+
+		}
+
 		deleteNode(node) {
-			node.delete();
+
+			let index = this.nodes.indexOf(node);
+			if (index > -1) {
+				this.nodes.splice(index, 1);
+			}
+			node.flow = null;
+
 		}
 
 		getInputById(id) {
@@ -271,6 +374,12 @@ module.exports = function(XIBLE) {
 
 			}
 
+		}
+
+		removeAllStatuses() {
+			this.nodes.forEach((node) => {
+				node.removeAllStatuses();
+			});
 		}
 
 	}

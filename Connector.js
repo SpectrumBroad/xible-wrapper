@@ -5,7 +5,18 @@ module.exports = function(XIBLE) {
 		constructor(obj) {
 
 			if (obj) {
+
 				Object.assign(this, obj);
+
+				this.origin = null;
+				this.destination = null;
+				this.setOrigin(obj.origin);
+				this.setDestination(obj.destination);
+
+				if (obj.type) {
+					this.setType(obj.type);
+				}
+
 			}
 
 		}
@@ -14,17 +25,26 @@ module.exports = function(XIBLE) {
 			this.type = type;
 		}
 
+		filterDuplicateConnectors(type, end) {
+
+			let otherType = (type === 'origin' ? 'destination' : 'origin');
+			end.connectors
+				.filter((conn) => conn[otherType] === this[otherType])
+				.forEach((conn) => conn.delete());
+
+		}
+
 		setEnd(type, end) {
 
 			//remove from old origin
-			let endConnectorIndex = this[type].connectors.indexOf(this);
-			if (this[type] && endConnectorIndex > -1) {
+			let endConnectorIndex;
+			if (this[type] && (endConnectorIndex = this[type].connectors.indexOf(this)) > -1) {
 
 				this[type].connectors.splice(endConnectorIndex, 1);
-				this[type].node.removeEventListener('position', this.originDrawFn);
+				this[type].node.removeListener('position', this.originDrawFn);
 
 				//trigger detachment
-				this[type].emit('editorDetach', this);
+				this[type].emit('detach', this);
 
 			}
 
@@ -36,19 +56,12 @@ module.exports = function(XIBLE) {
 			this.setType(end.type);
 
 			//disallow multiple connectors with same origin and destination
-			//if (!window.dummyFluxConnectors || window.dummyFluxConnectors.indexOf(this) === -1) {
-
-			let otherType = (type === 'origin' ? 'destination' : 'origin');
-			end.connectors
-				.filter((conn) => conn[otherType] === this[otherType])
-				.forEach((conn) => conn.delete());
-
-			//}
+			this.filterDuplicateConnectors(type, end);
 
 			end.connectors.push(this);
 
 			//trigger attachment functions
-			end.emit('editorAttach', this);
+			end.emit('attach', this);
 
 		}
 

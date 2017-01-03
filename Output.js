@@ -8,6 +8,16 @@ module.exports = function(XIBLE) {
 			super(...arguments);
 		}
 
+    delete() {
+
+      super.delete();
+
+      if (this.node) {
+        this.node.deleteOutput(this);
+      }
+
+    }
+
   }
 
   return Output;

@@ -15,6 +15,14 @@ module.exports = function(XIBLE) {
 				Object.assign(this, obj);
 			}
 
+			this.connectors = [];
+
+			if (!this._id) {
+				this._id = XIBLE.generateObjectId();
+			}
+
+			this.setName(name);
+
 			this.setType(this.type);
 
 			if (typeof this.singleType === 'boolean' && obj.singleType && !this.type) {
@@ -99,12 +107,11 @@ module.exports = function(XIBLE) {
 
 		setName(name) {
 
-			if (!name || this.name) {
+			if (!name) {
 				throw new Error(`the 'name' argument is missing`);
 			}
 
 			this.name = name;
-
 			return this;
 
 		}
@@ -159,10 +166,6 @@ module.exports = function(XIBLE) {
 
 			if (this.node && this instanceof Output) {
 				delete this.node.outputs[this.name];
-			}
-
-			if (this.node) {
-				this.node.removeIo(this);
 			}
 
 		}
