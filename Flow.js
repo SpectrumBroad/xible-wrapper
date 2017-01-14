@@ -21,11 +21,7 @@ module.exports = function(XIBLE) {
 			}
 
 			this.removeAllListeners();
-/*
-			if (!this._id) {
-				this._id = XIBLE.generateObjectId();
-			}
-*/
+
 			//setup viewstate
 			this.viewState = {
 				left: obj && obj.viewState && obj.viewState.left ? obj.viewState.left : 0,
@@ -139,7 +135,7 @@ module.exports = function(XIBLE) {
 
 		}
 
-		save() {
+		save(asNew) {
 
 			this.undirect();
 
@@ -148,7 +144,7 @@ module.exports = function(XIBLE) {
 				let json = this.toJson();
 				let req;
 
-				if (!this._id) {
+				if (!this._id || asNew) {
 					req = new OoHttpRequest('POST', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows`);
 				} else {
 					req = new OoHttpRequest('PUT', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${this._id}`);
@@ -278,7 +274,7 @@ module.exports = function(XIBLE) {
 
 			});
 
-			return `{"nodes":${nodeJson},"connectors":${connectorJson},"viewState":${JSON.stringify(this.viewState)}}`;
+			return `{"_id":"${this._id.replace(/"/g,'\\"')}","nodes":${nodeJson},"connectors":${connectorJson},"viewState":${JSON.stringify(this.viewState)}}`;
 
 		}
 

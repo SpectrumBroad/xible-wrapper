@@ -9,10 +9,7 @@ module.exports = function(XIBLE) {
 
 			super();
 
-			if (obj) {
-				Object.assign(this, obj);
-			}
-
+			Object.assign(this, obj);
 			this.removeAllListeners();
 
 			if (!this._id) {
@@ -56,6 +53,36 @@ module.exports = function(XIBLE) {
 					this.addOutput(new XIBLE.NodeOutput(name, outputs[name]));
 				}
 			}
+
+		}
+
+		static getAll() {
+
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes`);
+			return req.toObject(Object).then((nodes) => {
+
+				Object.keys(nodes).forEach((nodeName) => {
+					nodes[nodeName] = new Node(nodes[nodeName]);
+				});
+
+				return nodes;
+
+			});
+
+		}
+
+		static searchRegistry(searchString) {
+
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/registry/search`);
+			return req.toObject(Object, searchString).then((nodes) => {
+
+				Object.keys(nodes).forEach((nodeName) => {
+					nodes[nodeName] = new Node(nodes[nodeName]);
+				});
+
+				return nodes;
+
+			});
 
 		}
 
@@ -162,8 +189,7 @@ module.exports = function(XIBLE) {
 
 		deleteInput(input) {
 
-			this.deleteIo(input);
-			delete this.inputs[child.name];
+			delete this.inputs[input.name];
 			input.node = null;
 
 			return input;
@@ -172,8 +198,7 @@ module.exports = function(XIBLE) {
 
 		deleteOutput(output) {
 
-			this.deleteIo(output);
-			delete this.outputs[child.name];
+			delete this.outputs[output.name];
 			output.node = null;
 
 			return output;
