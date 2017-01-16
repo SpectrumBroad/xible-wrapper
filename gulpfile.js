@@ -28,6 +28,6 @@ gulp.task('start', () => {
 	gulp.watch(['*.js'], ['browserify']);
 });
 
-gulp.task('xibleeditor', () => {
+gulp.task('xibleeditor', ['toXibleEditor'], () => {
 	gulp.watch(['*.js'], ['toXibleEditor']);
 });

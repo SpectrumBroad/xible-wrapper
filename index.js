@@ -37,6 +37,7 @@ class XibleWrapper extends EventEmitter {
 		this.NodeInput = require('./Input.js')(this);
 		this.NodeOutput = require('./Output.js')(this);
 		this.Connector = require('./Connector.js')(this);
+		this.Config = require('./Config.js')(this);
 
 	}
 
@@ -75,19 +76,17 @@ class XibleWrapper extends EventEmitter {
 
 	}
 
-	getHostPorts() {
+	getPersistentWebSocketMessages() {
 
-		let req = new OoHttpRequest('GET', `https://${this.hostname}:${this.port}/server`);
-		return req.toObject(Object).then((obj) => {
-			this.socketServer = obj.socketServer;
-		});
+		let req = new OoHttpRequest('GET', `https://${this.hostname}:${this.port}/api/persistentWebSocketMessages`);
+		return req.toJson();
 
 	}
 
 	connectSocket() {
 
 		//setup a websocket towards
-		let ws = this.webSocket = new WebSocket(`wss://${this.hostname}:${this.socketServer.port}/?token=${this.token}`);
+		let ws = this.webSocket = new WebSocket(`wss://${this.hostname}:${this.port}/?token=${this.token}`);
 		ws.addEventListener('open', (event) => {
 
 			this.readyState = XibleWrapper.STATE_OPEN;
@@ -132,15 +131,7 @@ class XibleWrapper extends EventEmitter {
 		}
 
 		this.readyState = XibleWrapper.STATE_CONNECTING;
-
-		return this.getHostPorts()
-			.then(() => this.connectSocket())
-			.catch((err) => {
-
-				this.emit('error', err);
-				this.emit('close');
-
-			});
+		this.connectSocket();
 
 	}
 
