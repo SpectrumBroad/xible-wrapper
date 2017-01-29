@@ -142,7 +142,7 @@ module.exports = function(XIBLE) {
 
 		getEditorContent() {
 
-			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/${this.name}/editor/index.htm`);
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
 			return req.toString();
 
 		}

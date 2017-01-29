@@ -77,7 +77,7 @@ module.exports = function(XIBLE) {
 
 		static getById(id) {
 
-			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURI(id)}`);
+			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURIComponent(id)}`);
 			return req.toObject(Flow);
 
 		}
@@ -105,7 +105,7 @@ module.exports = function(XIBLE) {
 				return Promise.reject(`no id`);
 			}
 
-			let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURI(this._id)}/stop`);
+			let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURIComponent(this._id)}/stop`);
 			this.emit('stop');
 
 			return req.send();
@@ -120,7 +120,7 @@ module.exports = function(XIBLE) {
 				return Promise.reject(`no id`);
 			}
 
-			let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURI(this._id)}/start`);
+			let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURIComponent(this._id)}/start`);
 			this.emit('start');
 
 			return req.send();
@@ -135,7 +135,7 @@ module.exports = function(XIBLE) {
 				return;
 			}
 
-			let req = new OoHttpRequest('DELETE', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURI(this._id)}`);
+			let req = new OoHttpRequest('DELETE', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURIComponent(this._id)}`);
 			this.emit('delete');
 
 			return req.send();
@@ -154,7 +154,7 @@ module.exports = function(XIBLE) {
 				if (!this._id || asNew) {
 					req = new OoHttpRequest('POST', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows`);
 				} else {
-					req = new OoHttpRequest('PUT', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURI(this._id)}`);
+					req = new OoHttpRequest('PUT', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURIComponent(this._id)}`);
 				}
 
 				req.toObject(Object, json).then((json) => {
@@ -215,7 +215,7 @@ module.exports = function(XIBLE) {
 					};
 				});
 
-				let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURI(this._id)}/direct`);
+				let req = new OoHttpRequest('PATCH', `https://${XIBLE.hostname}:${XIBLE.port}/api/flows/${encodeURIComponent(this._id)}/direct`);
 				req.toString(nodes).then((json) => {
 
 					resolve(this);
