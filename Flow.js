@@ -404,7 +404,6 @@ module.exports = function(XIBLE) {
 		getGlobalOutputs() {
 
 			let globalOutputs = [];
-			console.log(this.nodes.length);
 			for (let i = 0; i < this.nodes.length; ++i) {
 				globalOutputs = globalOutputs.concat(this.nodes[i].getGlobalOutputs());
 			}
