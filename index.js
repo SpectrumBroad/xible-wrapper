@@ -38,6 +38,7 @@ class XibleWrapper extends EventEmitter {
 		this.NodeOutput = require('./Output.js')(this);
 		this.Connector = require('./Connector.js')(this);
 		this.Config = require('./Config.js')(this);
+		this.Registry = require('./Registry.js')(this);
 
 	}
 

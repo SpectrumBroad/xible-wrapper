@@ -71,21 +71,6 @@ module.exports = function(XIBLE) {
 
 		}
 
-		static searchRegistry(searchString) {
-
-			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/registry/search`);
-			return req.toObject(Object, searchString).then((nodes) => {
-
-				Object.keys(nodes).forEach((nodeName) => {
-					nodes[nodeName] = new Node(nodes[nodeName]);
-				});
-
-				return nodes;
-
-			});
-
-		}
-
 		static getAllInputObjectNodes(node) {
 
 			let resultNodes = [node];
