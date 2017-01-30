@@ -114,15 +114,6 @@ module.exports = function(XIBLE) {
 
 		}
 
-		//TODO: hook this up to XibleFlow where it belongs
-		getAllGlobals() {
-
-			return this.flow.nodes.filter((node) => {
-				return node.getOutputs().some((output) => output.global);
-			});
-
-		}
-
 		setData(attr, value) {
 
 			if (typeof value === 'undefined') {
@@ -246,6 +237,10 @@ module.exports = function(XIBLE) {
 			return Object.keys(this.outputs)
 				.map((key) => this.outputs[key]);
 
+		}
+
+		getGlobalOutputs() {
+			return this.getOutputs().filter((output) => output.global);
 		}
 
 		getInputsByType(type = null) {

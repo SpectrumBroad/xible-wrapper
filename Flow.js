@@ -385,6 +385,33 @@ module.exports = function(XIBLE) {
 
 		}
 
+		/**
+		 *	returns an array of all nodes in this flow that contain at least one global output
+		 *	@returns	{Node[]}	list of nodes
+		 */
+		getGlobalNodes() {
+
+			return this.nodes.filter((node) => {
+				return node.getOutputs().some((output) => output.global);
+			});
+
+		}
+
+		/**
+		 *	returns an array of all outputs in this flow that are global
+		 *	@returns	{Output[]}	list of nodes
+		 */
+		getGlobalOutputs() {
+
+			let globalOutputs = [];
+			console.log(this.nodes.length);
+			for (let i = 0; i < this.nodes.length; ++i) {
+				globalOutputs = globalOutputs.concat(this.nodes[i].getGlobalOutputs());
+			}
+			return globalOutputs;
+
+		}
+
 		removeAllStatuses() {
 			this.nodes.forEach((node) => {
 				node.removeAllStatuses();
