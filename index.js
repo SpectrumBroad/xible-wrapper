@@ -1,15 +1,12 @@
-'use strict';
-
+'use strict'; /* jshint ignore: line */
 
 //require a WebSocket module for nodejs
 const WebSocket = require('ws');
 
-const OoHttpRequest = require('../oohttprequest');
+const OoHttpRequestBase = require('../oohttprequest').Base;
 let EventEmitter = require('events').EventEmitter;
 
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 class XibleWrapper extends EventEmitter {
 
@@ -18,8 +15,12 @@ class XibleWrapper extends EventEmitter {
 		super();
 
 		//get obj properties we need
+		this.secure = typeof obj.secure === 'boolean' ? obj.secure : true;
 		this.hostname = obj.hostname;
 		this.port = obj.port || 9600;
+		this.baseUrl = `${this.secure ? 's' : ''}://${this.hostname}:${this.port}`;
+
+		this.httpRequestBase = new OoHttpRequestBase();
 
 		//token if specified
 		if (obj.token) {
@@ -73,13 +74,13 @@ class XibleWrapper extends EventEmitter {
 	setToken(token) {
 
 		this.token = token;
-		OoHttpRequest.defaults.headers['x-access-token'] = this.token;
+		OoHttpRequestBase.headers['x-access-token'] = this.token;
 
 	}
 
 	getPersistentWebSocketMessages() {
 
-		let req = new OoHttpRequest('GET', `https://${this.hostname}:${this.port}/api/persistentWebSocketMessages`);
+		let req = this.httpRequestBase.request('GET', `http${this.baseUrl}/api/persistentWebSocketMessages`);
 		return req.toJson();
 
 	}
@@ -87,7 +88,7 @@ class XibleWrapper extends EventEmitter {
 	connectSocket() {
 
 		//setup a websocket towards
-		let ws = this.webSocket = new WebSocket(`wss://${this.hostname}:${this.port}/?token=${this.token}`);
+		let ws = this.webSocket = new WebSocket(`ws${this.baseUrl}/?token=${this.token}`);
 		ws.addEventListener('open', (event) => {
 
 			this.readyState = XibleWrapper.STATE_OPEN;

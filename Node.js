@@ -1,6 +1,5 @@
 module.exports = function(XIBLE) {
 
-	const OoHttpRequest = require('../oohttprequest');
 	const EventEmitter = require('events').EventEmitter;
 
 	class Node extends EventEmitter {
@@ -58,8 +57,8 @@ module.exports = function(XIBLE) {
 
 		static getAll() {
 
-			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes`);
-			return req.toObject(Object).then((nodes) => {
+			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/nodes`);
+			return req.toJson().then((nodes) => {
 
 				Object.keys(nodes).forEach((nodeName) => {
 					nodes[nodeName] = new Node(nodes[nodeName]);
@@ -118,7 +117,7 @@ module.exports = function(XIBLE) {
 
 		getEditorContent() {
 
-			let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
+			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
 			return req.toString();
 
 		}

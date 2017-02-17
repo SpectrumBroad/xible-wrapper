@@ -1,12 +1,10 @@
 module.exports = function(XIBLE) {
 
-	const OoHttpRequest = require('../oohttprequest');
-
 	class Registry {
 
     static getAllNodes() {
 
-      let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/registry/nodes`);
+      let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/registry/nodes`);
 			return req.toObject(Object).then((nodes) => {
 
 				Object.keys(nodes).forEach((nodeName) => {
@@ -21,7 +19,7 @@ module.exports = function(XIBLE) {
 
     static searchNodes(searchString) {
 
-      let req = new OoHttpRequest('GET', `https://${XIBLE.hostname}:${XIBLE.port}/api/registry/nodes?search=${encodeURIComponent(searchString)}`);
+      let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/registry/nodes?search=${encodeURIComponent(searchString)}`);
 			return req.toObject(Object).then((nodes) => {
 
 				Object.keys(nodes).forEach((nodeName) => {
