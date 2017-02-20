@@ -69,21 +69,21 @@ module.exports = function(XIBLE) {
 
 		static validatePermissions() {
 
-			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/validateFlowPermissions`);
+			let req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/validateFlowPermissions`);
 			return req.toJson();
 
 		}
 
 		static getById(id) {
 
-			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(id)}`);
+			let req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(id)}`);
 			return req.toObject(Flow);
 
 		}
 
 		static getAll() {
 
-			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/flows`);
+			let req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/flows`);
 			return req.toObject(Object).then((flows) => {
 
 				Object.keys(flows).forEach((flowId) => {
@@ -104,7 +104,7 @@ module.exports = function(XIBLE) {
 				return Promise.reject(`no id`);
 			}
 
-			let req = XIBLE.httpRequestBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/stop`);
+			let req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/stop`);
 			this.emit('stop');
 
 			return req.send();
@@ -119,7 +119,7 @@ module.exports = function(XIBLE) {
 				return Promise.reject(`no id`);
 			}
 
-			let req = XIBLE.httpRequestBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/start`);
+			let req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/start`);
 			this.emit('start');
 
 			return req.send();
@@ -134,7 +134,7 @@ module.exports = function(XIBLE) {
 				return;
 			}
 
-			let req = XIBLE.httpRequestBase.request('DELETE', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}`);
+			let req = XIBLE.httpBase.request('DELETE', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}`);
 			this.emit('delete');
 
 			return req.send();
@@ -151,9 +151,9 @@ module.exports = function(XIBLE) {
 				let req;
 
 				if (!this._id || asNew) {
-					req = XIBLE.httpRequestBase.request('POST', `http${XIBLE.baseUrl}/api/flows`);
+					req = XIBLE.httpBase.request('POST', `http${XIBLE.baseUrl}/api/flows`);
 				} else {
-					req = XIBLE.httpRequestBase.request('PUT', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}`);
+					req = XIBLE.httpBase.request('PUT', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}`);
 				}
 
 				req.toObject(Object, json).then((json) => {
@@ -214,7 +214,7 @@ module.exports = function(XIBLE) {
 					};
 				});
 
-				let req = XIBLE.httpRequestBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/direct`);
+				let req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/direct`);
 				req.toString(nodes).then((json) => {
 
 					resolve(this);

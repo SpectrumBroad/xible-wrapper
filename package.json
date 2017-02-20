@@ -2,7 +2,8 @@
   "name": "xibleWrapper",
   "version": "0.0.1",
   "dependencies": {
-    "ws": "*"
+    "ws": "*",
+    "oohttp": "*"
   },
   "devDependencies": {
     "browserify": "*",

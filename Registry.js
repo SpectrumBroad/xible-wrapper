@@ -2,35 +2,19 @@ module.exports = function(XIBLE) {
 
 	class Registry {
 
-    static getAllNodes() {
+    static searchNodePacks(searchString) {
 
-      let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/registry/nodes`);
-			return req.toObject(Object).then((nodes) => {
-
-				Object.keys(nodes).forEach((nodeName) => {
-					nodes[nodeName] = new XIBLE.Node(nodes[nodeName]);
-				});
-
-				return nodes;
-
-			});
+      let req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/registry/nodepacks?search=${encodeURIComponent(searchString)}`);
+			return req.toJson();
 
     }
 
-    static searchNodes(searchString) {
+		static installNodePackByName(nodePackName) {
 
-      let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/registry/nodes?search=${encodeURIComponent(searchString)}`);
-			return req.toObject(Object).then((nodes) => {
+			let req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/registry/nodepacks/${encodeURIComponent(nodePackName)}/install`);
+			return req.send();
 
-				Object.keys(nodes).forEach((nodeName) => {
-					nodes[nodeName] = new XIBLE.Node(nodes[nodeName]);
-				});
-
-				return nodes;
-
-			});
-
-    }
+		}
 
   }
 

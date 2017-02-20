@@ -57,7 +57,7 @@ module.exports = function(XIBLE) {
 
 		static getAll() {
 
-			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/nodes`);
+			let req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/nodes`);
 			return req.toJson().then((nodes) => {
 
 				Object.keys(nodes).forEach((nodeName) => {
@@ -117,7 +117,7 @@ module.exports = function(XIBLE) {
 
 		getEditorContent() {
 
-			let req = XIBLE.httpRequestBase.request('GET', `http${XIBLE.baseUrl}/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
+			let req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
 			return req.toString();
 
 		}
