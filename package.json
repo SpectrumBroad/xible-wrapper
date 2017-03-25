@@ -1,6 +1,7 @@
 {
-  "name": "xibleWrapper",
+  "name": "xible-wrapper",
   "version": "0.0.1",
+  "description": "nodejs wrapper for xible",
   "dependencies": {
     "ws": "*",
     "oohttp": "*"
@@ -17,6 +18,5 @@
   },
   "browser": {
     "ws": "./shim/ws.js"
-  },
-  "private": true
+  }
 }
