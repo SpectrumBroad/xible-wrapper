@@ -1,6 +1,6 @@
 module.exports = function(XIBLE) {
 
-  const Io = require('./Io.js');
+	const Io = require('./Io.js');
 
 	class Output extends Io {
 
@@ -8,18 +8,18 @@ module.exports = function(XIBLE) {
 			super(...arguments);
 		}
 
-    delete() {
+		delete() {
 
-      super.delete();
+			super.delete();
 
-      if (this.node) {
-        this.node.deleteOutput(this);
-      }
+			if (this.node) {
+				this.node.deleteOutput(this);
+			}
 
-    }
+		}
 
-  }
+	}
 
-  return Output;
+	return Output;
 
 };
