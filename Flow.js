@@ -255,8 +255,12 @@ module.exports = function(XIBLE) {
 
 					case 'data':
 
-						dataObject = value;
-						return value;
+						if (this !== inputsObject && this !== outputsObject) {
+
+							dataObject = value;
+							return value;
+
+						}	// jshint ignore: line
 
 					default:
 
