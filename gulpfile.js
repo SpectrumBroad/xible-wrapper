@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const babel = require('gulp-babel');
 const browserify = require('browserify');
 const transform = require('vinyl-source-stream');
-const nodemon = require('gulp-nodemon');
 const rename = require('gulp-rename');
 
 gulp.task('browserify', () => {

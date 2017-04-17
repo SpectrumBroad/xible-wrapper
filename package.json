@@ -13,7 +13,6 @@
 		"gulp": "*",
 		"gulp-babel": "*",
 		"vinyl-source-stream": "*",
-		"gulp-nodemon": "*",
 		"gulp-rename": "*"
 	},
 	"browser": {
