@@ -6,8 +6,6 @@ const WebSocket = require('ws');
 const OoHttpBase = require('oohttp').Base;
 let EventEmitter = require('events').EventEmitter;
 
-//process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 class XibleWrapper extends EventEmitter {
 
 	constructor(obj) {
@@ -119,10 +117,22 @@ class XibleWrapper extends EventEmitter {
 			this.emit('error', event);
 		});
 
+		let messageHandler = (json) => {
+
+			if (json.method !== 'xible.messages') {
+				this.emit('message', json);
+				return;
+			}
+
+			json.messages.forEach((message) => {
+				messageHandler(message);
+			});
+
+		}
+
 		ws.addEventListener('message', (event) => {
 
-			this.emit('message', event);
-
+			let json;
 			try {
 
 				/**
@@ -130,8 +140,14 @@ class XibleWrapper extends EventEmitter {
 				 *  @event XibleWrapper#json
 				 *  @type {Object}
 				 */
-				this.emit('json', JSON.parse(event.data));
-			} catch (e) {}
+				json = JSON.parse(event.data);
+			} catch (err) {}
+
+			if (!json) {
+				return;
+			}
+
+			messageHandler(json);
 
 		});
 
