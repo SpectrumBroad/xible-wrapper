@@ -251,6 +251,9 @@ module.exports = function(XIBLE) {
 
 		}
 
+		removeAllStatuses() {
+		}
+
 	}
 
 	return Node;
