@@ -98,13 +98,12 @@ module.exports = function(XIBLE) {
 		}
 
 		setType(type) {
-
 			//set new type
 			this.type = type;
 			this.verifyConnectors();
+			this.emit('settype', type);
 
 			return this;
-
 		}
 
 		setName(name) {
