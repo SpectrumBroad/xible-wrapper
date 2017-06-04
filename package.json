@@ -1,7 +1,27 @@
 {
   "name": "xible-wrapper",
-  "version": "0.2.0",
-  "description": "nodejs wrapper for xible",
+  "version": "0.3.1",
+  "description": "Nodejs wrapper for XIBLE",
+  "license": "MIT",
+  "homepage": "https://xible.io",
+  "author": {
+    "name": "Stefan de Jong"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spectrumbroad/xible-wrapper"
+  },
+  "bugs": {
+    "url": "https://github.com/spectrumbroad/xible-wrapper/issues",
+    "email": "bugs@xible.io"
+  },
+  "keywords": [
+    "xible",
+    "wrapper"
+  ],
+  "scripts": {
+    "prepublish": "gulp browserify && npm shrinkwrap --only=prod"
+  },
   "dependencies": {
     "ws": "*",
     "oohttp": "*"
@@ -10,7 +30,6 @@
     "browserify": "*",
     "gulp": "*",
     "vinyl-source-stream": "*",
-    "gulp-rename": "*",
     "eslint": "*",
     "eslint-plugin-import": "*",
     "eslint-config-airbnb": "*",
