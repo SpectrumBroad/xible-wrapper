@@ -1,25 +1,17 @@
-module.exports = function(XIBLE) {
+'use strict';
 
-	const Io = require('./Io.js');
+module.exports = (XIBLE) => {
+  class Output extends XIBLE.NodeIo {
 
-	class Output extends Io {
+    delete() {
+      super.delete();
 
-		constructor() {
-			super(...arguments);
-		}
+      if (this.node) {
+        this.node.deleteOutput(this);
+      }
+    }
 
-		delete() {
+  }
 
-			super.delete();
-
-			if (this.node) {
-				this.node.deleteOutput(this);
-			}
-
-		}
-
-	}
-
-	return Output;
-
+  return Output;
 };

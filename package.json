@@ -1,21 +1,23 @@
 {
-	"name": "xible-wrapper",
-	"version": "0.2.0",
-	"description": "nodejs wrapper for xible",
-	"dependencies": {
-		"ws": "*",
-		"oohttp": "*"
-	},
-	"devDependencies": {
-		"browserify": "*",
-		"babel-preset-es2015": "*",
-		"babel-preset-stage-0": "*",
-		"gulp": "*",
-		"gulp-babel": "*",
-		"vinyl-source-stream": "*",
-		"gulp-rename": "*"
-	},
-	"browser": {
-		"ws": "./shim/ws.js"
-	}
+  "name": "xible-wrapper",
+  "version": "0.2.0",
+  "description": "nodejs wrapper for xible",
+  "dependencies": {
+    "ws": "*",
+    "oohttp": "*"
+  },
+  "devDependencies": {
+    "browserify": "*",
+    "gulp": "*",
+    "vinyl-source-stream": "*",
+    "gulp-rename": "*",
+    "eslint": "*",
+    "eslint-plugin-import": "*",
+    "eslint-config-airbnb": "*",
+    "eslint-plugin-jsx-a11y": "*",
+    "eslint-plugin-react": "*"
+  },
+  "browser": {
+    "ws": "./shim/ws.js"
+  }
 }
