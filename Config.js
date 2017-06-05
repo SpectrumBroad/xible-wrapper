@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = (XIBLE) => {
+  const EventEmitter = require('events').EventEmitter;
+
   // local cache
   let config = null;
 
@@ -103,6 +105,10 @@ module.exports = (XIBLE) => {
 
   }
 
+  // statically hook eventemitter
+  Object.assign(Config, EventEmitter.prototype);
+  EventEmitter.call(Config);
+
   // reset config when the connection closes
   XIBLE.on('close', () => {
     config = null;
@@ -117,10 +123,12 @@ module.exports = (XIBLE) => {
     switch (json.method) {
       case 'xible.config.setValue':
         Config.setObjectValueOnPath(config, json.path, json.value);
+        Config.emit('setValue', json.path, json.value);
         break;
 
       case 'xible.config.deleteValue':
         Config.deleteObjectValueOnPath(config, json.path);
+        Config.emit('deleteValue', json.path);
         break;
     }
   });
