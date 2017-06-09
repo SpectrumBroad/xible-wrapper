@@ -3,24 +3,22 @@
 // require a WebSocket module for nodejs
 const WebSocket = require('ws');
 
-const OoHttpBase = require('oohttp').Base;
+const oohttp = require('oohttp');
 const EventEmitter = require('events').EventEmitter;
 
 class XibleWrapper extends EventEmitter {
 
   constructor(obj) {
     super();
-
-    // get obj properties we need
-    this.secure = typeof obj.secure === 'boolean' ? obj.secure : true;
-    this.hostname = obj.hostname;
-    this.port = obj.port || 9600;
-    this.baseUrl = `${this.secure ? 's' : ''}://${this.hostname}:${this.port}`;
-
-    this.httpBase = new OoHttpBase();
+    if (typeof obj === 'string') {
+      this.url = obj;
+    } else if (obj && obj.url) {
+      this.url = obj.url;
+    }
+    this.http = new oohttp.Base(this.url);
 
     // token if specified
-    if (obj.token) {
+    if (obj && obj.token) {
       this.setToken(obj.token);
     }
 
@@ -67,11 +65,11 @@ class XibleWrapper extends EventEmitter {
 
   setToken(token) {
     this.token = token;
-    this.httpBase.headers['x-access-token'] = this.token;
+    this.http.headers['x-auth-token'] = this.token;
   }
 
   getServerDate() {
-    const req = this.httpBase.request('GET', `http${this.baseUrl}/api/serverDate`);
+    const req = this.http.request('GET', '/api/serverDate');
     return req.toJson();
   }
 
@@ -80,13 +78,19 @@ class XibleWrapper extends EventEmitter {
   }
 
   getPersistentWebSocketMessages() {
-    const req = this.httpBase.request('GET', `http${this.baseUrl}/api/persistentWebSocketMessages`);
+    const req = this.http.request('GET', '/api/persistentWebSocketMessages');
     return req.toJson();
   }
 
   connectSocket() {
-    // setup a websocket towards
-    const ws = this.webSocket = new WebSocket(`ws${this.baseUrl}/?token=${this.token}`);
+    // setup a websocket
+    let protocol = 'ws';
+    if (this.http.url.protocol === 'https') {
+      protocol = 'wss';
+    }
+    const wsUrl = new oohttp.Url(`${protocol}://`);
+    wsUrl.mergeFrom(this.http);
+    const ws = this.webSocket = new WebSocket(wsUrl.toString());
     ws.addEventListener('open', (event) => {
       this.readyState = XibleWrapper.STATE_OPEN;
       this.emit('open', event);

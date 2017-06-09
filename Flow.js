@@ -125,17 +125,17 @@ module.exports = (XIBLE) => {
     }
 
     static validatePermissions() {
-      const req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/validateFlowPermissions`);
+      const req = XIBLE.http.request('GET', '/api/validateFlowPermissions');
       return req.toJson();
     }
 
     static getById(id) {
-      const req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(id)}`);
+      const req = XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(id)}`);
       return req.toObject(Flow);
     }
 
     static getAll() {
-      const req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/flows`);
+      const req = XIBLE.http.request('GET', '/api/flows');
       return req.toObject(Object).then((flows) => {
         Object.keys(flows).forEach((flowId) => {
           flows[flowId] = new Flow(flows[flowId]);
@@ -176,7 +176,7 @@ module.exports = (XIBLE) => {
         return Promise.reject('no id');
       }
 
-      const req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/stop`);
+      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/stop`);
       this.emit('stop');
 
       return req.send();
@@ -189,7 +189,7 @@ module.exports = (XIBLE) => {
         return Promise.reject('no id');
       }
 
-      const req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/start`);
+      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/start`);
       this.emit('start');
 
       return req.send();
@@ -202,7 +202,7 @@ module.exports = (XIBLE) => {
         return;
       }
 
-      const req = XIBLE.httpBase.request('DELETE', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}`);
+      const req = XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this._id)}`);
       this.emit('delete');
 
       return req.send();
@@ -216,9 +216,9 @@ module.exports = (XIBLE) => {
         let req;
 
         if (!this._id || asNew) {
-          req = XIBLE.httpBase.request('POST', `http${XIBLE.baseUrl}/api/flows`);
+          req = XIBLE.http.request('POST', '/api/flows');
         } else {
-          req = XIBLE.httpBase.request('PUT', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}`);
+          req = XIBLE.http.request('PUT', `/api/flows/${encodeURIComponent(this._id)}`);
         }
 
         req.toObject(Object, json)
@@ -269,7 +269,7 @@ module.exports = (XIBLE) => {
           data: node.data
         }));
 
-        const req = XIBLE.httpBase.request('PATCH', `http${XIBLE.baseUrl}/api/flows/${encodeURIComponent(this._id)}/direct`);
+        const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/direct`);
         req.toString(nodes)
           .then((json) => {
             resolve(this);
@@ -312,15 +312,16 @@ module.exports = (XIBLE) => {
             if (this !== inputsObject && this !== outputsObject) {
               dataObject = value;
               return value;
-            } // jshint ignore: line
+            }
 
           default:
 
-            if (this !== inputsObject && this !== outputsObject && this !== dataObject && key && isNaN(key) && NODE_WHITE_LIST.indexOf(key) === -1) {
+            if (this !== inputsObject && this !== outputsObject && this !== dataObject
+              && key && isNaN(key) && NODE_WHITE_LIST.indexOf(key) === -1
+            ) {
               return;
             }
             return value;
-
 
         }
       });

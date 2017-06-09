@@ -13,7 +13,7 @@ module.exports = (XIBLE) => {
         return Promise.resolve(config);
       }
 
-      return XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/config`)
+      return XIBLE.http.request('GET', '/api/config')
         .toJson()
         .then((configObj) => {
           config = configObj;
@@ -22,14 +22,14 @@ module.exports = (XIBLE) => {
     }
 
     static validatePermissions() {
-      const req = XIBLE.httpBase.request('GET', `http${XIBLE.baseUrl}/api/config/validatePermissions`);
+      const req = XIBLE.http.request('GET', '/api/config/validatePermissions');
       return req.toJson();
     }
 
     static deleteValue(path) {
       this.deleteObjectValueOnPath(config, path);
 
-      const req = XIBLE.httpBase.request('DELETE', `http${XIBLE.baseUrl}/api/config/value`);
+      const req = XIBLE.http.request('DELETE', '/api/config/value');
       return req.toJson({
         path
       });
@@ -42,7 +42,7 @@ module.exports = (XIBLE) => {
 
       this.setObjectValueOnPath(config, path, value);
 
-      const req = XIBLE.httpBase.request('PUT', `http${XIBLE.baseUrl}/api/config/value`);
+      const req = XIBLE.http.request('PUT', '/api/config/value');
       return req.toJson({
         path,
         value
