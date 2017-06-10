@@ -25,7 +25,6 @@ class XibleWrapper extends EventEmitter {
     // default props
     this.readyState = XibleWrapper.STATE_CLOSED;
     this.webSocket = null;
-    this.socketServer = null;
 
     this.Flow = require('./Flow.js')(this);
     this.Node = require('./Node.js')(this);
@@ -183,9 +182,9 @@ class XibleWrapper extends EventEmitter {
   // if this close is enforced and autoreconnect is on,
   // disable autoreconnect
   stopAutoReconnect() {
-    if (this.autoReconnectListener) {
-      this.removeListener('close', this.autoReconnectListener);
-      this.autoReconnectListener = null;
+    if (this._autoReconnectListener) {
+      this.removeListener('close', this._autoReconnectListener);
+      this._autoReconnectListener = null;
     }
   }
 
