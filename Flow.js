@@ -3,8 +3,6 @@
 module.exports = (XIBLE) => {
   const EventEmitter = require('events').EventEmitter;
 
-  XIBLE.setMaxListeners(0);
-
   class Flow extends EventEmitter {
 
     constructor(obj) {
