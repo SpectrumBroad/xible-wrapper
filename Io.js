@@ -23,12 +23,32 @@ module.exports = (XIBLE) => {
 
       this.setType(this.type);
 
-      if (typeof this.singleType === 'boolean' && obj.singleType && !this.type) {
+      if (typeof this.singleType === 'boolean' && this.singleType && !this.type) {
         this.setSingleType(this.singleType);
       }
 
-      if (typeof obj.maxConnectors === 'number') {
+      if (typeof this.maxConnectors === 'number') {
         this.setMaxConnectors(this.maxConnectors);
+      }
+
+      if (typeof this.assignsOutputType === 'string') {
+        this.on('settype', () => {
+          if (!this.node) {
+            return;
+          }
+          this.node.getOutputByName(this.assignsOutputType)
+          .setType(this.type);
+        });
+      }
+
+      if (typeof this.assignsInputType === 'string') {
+        this.on('settype', () => {
+          if (!this.node) {
+            return;
+          }
+          this.node.getInputByName(this.assignsInputType)
+          .setType(this.type);
+        });
       }
 
       if (this.hidden) {
@@ -53,7 +73,7 @@ module.exports = (XIBLE) => {
       if (this.singleType) {
         this.on('attach', (conn) => {
           const connLoc = conn[this instanceof XIBLE.NodeInput ? 'origin' : 'destination'];
-          if (connLoc.type) {
+          if (connLoc && connLoc.type) {
             this.setType(connLoc.type);
           }
         });
