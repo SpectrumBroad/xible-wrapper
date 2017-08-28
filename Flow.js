@@ -131,8 +131,10 @@ module.exports = (XIBLE) => {
 
     static getAll() {
       const req = XIBLE.http.request('GET', '/api/flows');
-      return req.toObject(Object).then((flows) => {
-        Object.keys(flows).forEach((flowId) => {
+      return req.toObject(Object)
+      .then((flows) => {
+        Object.keys(flows)
+        .forEach((flowId) => {
           flows[flowId] = new Flow(flows[flowId]);
         });
 
