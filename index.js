@@ -9,6 +9,8 @@ const EventEmitter = require('events').EventEmitter;
 class XibleWrapper extends EventEmitter {
   constructor(obj) {
     super();
+    this.setMaxListeners(0);
+
     if (typeof obj === 'string') {
       this.url = obj;
     } else if (obj && obj.url) {
