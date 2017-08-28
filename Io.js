@@ -81,6 +81,10 @@ module.exports = (XIBLE) => {
     }
 
     setType(type) {
+      if (this.type === type) {
+        return this;
+      }
+
       // set new type
       this.type = type;
       this.verifyConnectors();
