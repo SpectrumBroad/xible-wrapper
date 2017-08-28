@@ -8,8 +8,17 @@ module.exports = () => {
 
         this.origin = null;
         this.destination = null;
-        this.setOrigin(obj.origin);
-        this.setDestination(obj.destination);
+        this.setOrigin(obj.origin, true);
+        this.setDestination(obj.destination, true);
+
+        // trigger attachment functions
+        // after both points have been set.
+        if (this.origin) {
+          this.origin.emit('attach', this);
+        }
+        if (this.destination) {
+          this.destination.emit('attach', this);
+        }
 
         if (obj.type) {
           this.setType(obj.type);
@@ -28,7 +37,7 @@ module.exports = () => {
       .forEach(conn => conn.delete());
     }
 
-    setEnd(type, end) {
+    setEnd(type, end, noEmit) {
       // remove from old origin
       let endConnectorIndex;
       if (this[type] && (endConnectorIndex = this[type].connectors.indexOf(this)) > -1) {
@@ -49,17 +58,19 @@ module.exports = () => {
       end.connectors.push(this);
 
       // trigger attachment functions
-      end.emit('attach', this);
+      if (!noEmit) {
+        end.emit('attach', this);
+      }
 
       return end;
     }
 
-    setOrigin(origin) {
-      this.setEnd('origin', origin);
+    setOrigin(origin, noEmit) {
+      this.setEnd('origin', origin, noEmit);
     }
 
-    setDestination(destination) {
-      this.setEnd('destination', destination);
+    setDestination(destination, noEmit) {
+      this.setEnd('destination', destination, noEmit);
     }
 
     delete() {
