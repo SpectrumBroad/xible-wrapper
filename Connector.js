@@ -1,8 +1,7 @@
 'use strict';
 
-module.exports = (XIBLE) => {
+module.exports = () => {
   class Connector {
-
     constructor(obj) {
       if (obj) {
         Object.assign(this, obj);
@@ -25,8 +24,8 @@ module.exports = (XIBLE) => {
     filterDuplicateConnectors(type, end) {
       const otherType = (type === 'origin' ? 'destination' : 'origin');
       end.connectors
-        .filter(conn => conn[otherType] === this[otherType])
-        .forEach(conn => conn.delete());
+      .filter(conn => conn[otherType] === this[otherType])
+      .forEach(conn => conn.delete());
     }
 
     setEnd(type, end) {
@@ -51,6 +50,8 @@ module.exports = (XIBLE) => {
 
       // trigger attachment functions
       end.emit('attach', this);
+
+      return end;
     }
 
     setOrigin(origin) {
@@ -65,7 +66,6 @@ module.exports = (XIBLE) => {
       this.setOrigin(null);
       this.setDestination(null);
     }
-
   }
 
   return Connector;

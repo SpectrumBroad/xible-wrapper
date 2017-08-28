@@ -7,7 +7,6 @@ const oohttp = require('oohttp');
 const EventEmitter = require('events').EventEmitter;
 
 class XibleWrapper extends EventEmitter {
-
   constructor(obj) {
     super();
     if (typeof obj === 'string') {
@@ -55,8 +54,8 @@ class XibleWrapper extends EventEmitter {
   generateObjectId() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
+      .toString(16)
+      .substring(1);
     }
     return `${s4() + s4()}-${s4()}-${s4()}-${
       s4()}-${s4()}${s4()}${s4()}`;
@@ -187,7 +186,6 @@ class XibleWrapper extends EventEmitter {
       this._autoReconnectListener = null;
     }
   }
-
 }
 
 module.exports = XibleWrapper;

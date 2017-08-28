@@ -4,7 +4,6 @@ module.exports = (XIBLE) => {
   const EventEmitter = require('events').EventEmitter;
 
   class Io extends EventEmitter {
-
     constructor(name, obj) {
       super();
 
@@ -112,8 +111,8 @@ module.exports = (XIBLE) => {
       const checkPlace = this instanceof XIBLE.NodeInput ? 'origin' : 'destination';
       if (this.type) {
         this.connectors
-          .filter(conn => conn[checkPlace].type && conn[checkPlace].type !== this.type)
-          .forEach(conn => conn.delete());
+        .filter(conn => conn[checkPlace].type && conn[checkPlace].type !== this.type)
+        .forEach(conn => conn.delete());
       }
     }
 
@@ -140,7 +139,6 @@ module.exports = (XIBLE) => {
         delete this.node.outputs[this.name];
       }
     }
-
   }
 
   return Io;

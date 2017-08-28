@@ -4,7 +4,6 @@ module.exports = (XIBLE) => {
   const EventEmitter = require('events').EventEmitter;
 
   class Flow extends EventEmitter {
-
     constructor(obj) {
       super();
 
@@ -18,7 +17,6 @@ module.exports = (XIBLE) => {
         }
 
         switch (json.method) {
-
           case 'xible.flow.loadJson':
             this.runnable = json.runnable;
             this.emit('loadJson');
@@ -71,7 +69,6 @@ module.exports = (XIBLE) => {
             this.state = Flow.STATE_STOPPED;
             this.emit('stopped', json);
             break;
-
         }
       });
 
@@ -197,7 +194,7 @@ module.exports = (XIBLE) => {
       this.undirect();
 
       if (!this._id) {
-        return;
+        return Promise.resolve();
       }
 
       const req = XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this._id)}`);
@@ -220,14 +217,14 @@ module.exports = (XIBLE) => {
         }
 
         req.toObject(Object, json)
-          .then((reqJson) => {
-            this._id = reqJson._id;
-            resolve(this);
-            this.emit('save');
-          })
-          .catch((err) => {
-            reject(err);
-          });
+        .then((reqJson) => {
+          this._id = reqJson._id;
+          resolve(this);
+          this.emit('save');
+        })
+        .catch((err) => {
+          reject(err);
+        });
       });
     }
 
@@ -249,12 +246,13 @@ module.exports = (XIBLE) => {
           this._lastDirectPromise.then(this._lastPostDirectFunction);
         }
 
-        return;
+        return Promise.resolve();
       }
 
       // ensure this flow is saved first
       if (!this._id) {
-        return this.save().then(() => this.direct(related));
+        return this.save()
+        .then(() => this.direct(related));
       }
 
       if (!related) {
@@ -269,22 +267,21 @@ module.exports = (XIBLE) => {
 
         const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/direct`);
         req.toString(nodes)
-          .then((json) => {
-            resolve(this);
-            this._lastDirectPromise = null;
+        .then(() => {
+          resolve(this);
+          this._lastDirectPromise = null;
 
-            this.emit('direct');
-          })
-          .catch((err) => {
-            reject(err);
-          });
+          this.emit('direct');
+        })
+        .catch((err) => {
+          reject(err);
+        });
       });
 
       return this._lastDirectPromise;
     }
 
     // TODO: this functions isn't 'pretty'
-    // more importantly, it can't handle nodes with io's named 'data'
     // and it should be toJSON().
     toJson(nodes, connectors) {
       // the nodes
@@ -292,35 +289,29 @@ module.exports = (XIBLE) => {
       let dataObject;
       let inputsObject;
       let outputsObject;
-      const nodeJson = JSON.stringify(nodes || this.nodes, function (key, value) {
+      const nodeJson = JSON.stringify(nodes || this.nodes, function jsonStringify(key, value) {
         switch (key) {
-
           case 'inputs':
-
             inputsObject = value;
             return value;
 
           case 'outputs':
-
             outputsObject = value;
             return value;
 
           case 'data':
-
             if (this !== inputsObject && this !== outputsObject) {
               dataObject = value;
               return value;
             }
 
-          default:
-
+          default: // eslint-disable-line no-fallthrough
             if (this !== inputsObject && this !== outputsObject && this !== dataObject
               && key && isNaN(key) && NODE_WHITE_LIST.indexOf(key) === -1
             ) {
-              return;
+              return; // eslint-disable-line consistent-return
             }
             return value;
-
         }
       });
 
@@ -330,9 +321,9 @@ module.exports = (XIBLE) => {
         if (key && isNaN(key) && CONNECTOR_WHITE_LIST.indexOf(key) === -1) {
           return;
         } else if (value && (key === 'origin' || key === 'destination')) {
-          return value._id;
+          return value._id; // eslint-disable-line consistent-return
         }
-        return value;
+        return value; // eslint-disable-line consistent-return
       });
 
       return `{"_id":${JSON.stringify(this._id)},"nodes":${nodeJson},"connectors":${connectorJson},"viewState":${JSON.stringify(this.viewState)}}`;
@@ -393,7 +384,7 @@ module.exports = (XIBLE) => {
     }
 
     getInputById(id) {
-      for (let i = 0; i < this.nodes.length; ++i) {
+      for (let i = 0; i < this.nodes.length; i += 1) {
         const node = this.nodes[i];
         for (const name in node.inputs) {
           if (node.inputs[name]._id === id) {
@@ -401,10 +392,11 @@ module.exports = (XIBLE) => {
           }
         }
       }
+      return null;
     }
 
     getOutputById(id) {
-      for (let i = 0; i < this.nodes.length; ++i) {
+      for (let i = 0; i < this.nodes.length; i += 1) {
         const node = this.nodes[i];
         for (const name in node.outputs) {
           if (node.outputs[name]._id === id) {
@@ -412,6 +404,7 @@ module.exports = (XIBLE) => {
           }
         }
       }
+      return null;
     }
 
     /**
@@ -439,7 +432,6 @@ module.exports = (XIBLE) => {
         node.removeAllStatuses();
       });
     }
-
   }
 
   return Flow;

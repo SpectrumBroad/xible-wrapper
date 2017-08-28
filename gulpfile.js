@@ -8,11 +8,11 @@ gulp.task('browserify', () =>
   browserify('index.js', {
     standalone: 'XibleWrapper'
   })
-    .bundle()
-    .pipe(transform('index.js'))
-    .pipe(gulp.dest('./dist'))
+  .bundle()
+  .pipe(transform('index.js'))
+  .pipe(gulp.dest('./dist'))
 );
 
-gulp.task('start', () => {
+gulp.task('start', ['browserify'], () => {
   gulp.watch(['*.js'], ['browserify']);
 });

@@ -7,18 +7,17 @@ module.exports = (XIBLE) => {
   let config = null;
 
   class Config {
-
     static getAll() {
       if (config) {
         return Promise.resolve(config);
       }
 
       return XIBLE.http.request('GET', '/api/config')
-        .toJson()
-        .then((configObj) => {
-          config = configObj;
-          return config;
-        });
+      .toJson()
+      .then((configObj) => {
+        config = configObj;
+        return config;
+      });
     }
 
     static validatePermissions() {
@@ -100,9 +99,8 @@ module.exports = (XIBLE) => {
 
     static getValue(path) {
       return this.getAll()
-        .then(configObj => this.getObjectValueOnPath(configObj, path));
+      .then(configObj => this.getObjectValueOnPath(configObj, path));
     }
-
   }
 
   // statically hook eventemitter

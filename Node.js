@@ -4,7 +4,6 @@ module.exports = (XIBLE) => {
   const EventEmitter = require('events').EventEmitter;
 
   class Node extends EventEmitter {
-
     constructor(obj = {}, ignoreData = false) {
       super();
 
@@ -173,12 +172,12 @@ module.exports = (XIBLE) => {
 
     getInputs() {
       return Object.keys(this.inputs)
-        .map(key => this.inputs[key]);
+      .map(key => this.inputs[key]);
     }
 
     getOutputs() {
       return Object.keys(this.outputs)
-        .map(key => this.outputs[key]);
+      .map(key => this.outputs[key]);
     }
 
     getGlobalOutputs() {
@@ -205,9 +204,8 @@ module.exports = (XIBLE) => {
       return outputs;
     }
 
-    removeAllStatuses() {
+    removeAllStatuses() { // eslint-disable-line class-methods-use-this
     }
-
   }
 
   return Node;

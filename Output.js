@@ -2,7 +2,6 @@
 
 module.exports = (XIBLE) => {
   class Output extends XIBLE.NodeIo {
-
     delete() {
       super.delete();
 
@@ -10,7 +9,6 @@ module.exports = (XIBLE) => {
         this.node.deleteOutput(this);
       }
     }
-
   }
 
   return Output;
