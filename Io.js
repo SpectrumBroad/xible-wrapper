@@ -122,6 +122,25 @@ module.exports = (XIBLE) => {
       return this;
     }
 
+    /**
+    * Verifies whether a connector matches the typedef on the NodeIo
+    * @param {Connector}
+    * @returns {Promise.<Boolean>}
+    */
+    matchesTypeDef(connector) {
+      return XIBLE.TypeDef.getAll()
+      .then((typeDefs) => {
+        const outGoing = this instanceof XIBLE.NodeOutput;
+        const originTypeDef = typeDefs[(outGoing ? this.type : connector.origin.type)];
+        const destinationTypeDef = typeDefs[(outGoing ? connector.destination.type : this.type)];
+
+        if (!destinationTypeDef || !originTypeDef) {
+          return false;
+        }
+        return destinationTypeDef.matches(originTypeDef);
+      });
+    }
+
     verifyConnectors() {
       // remove connectors if we have too many
       // always removes the latest added conns
@@ -132,10 +151,10 @@ module.exports = (XIBLE) => {
       }
 
       // verify type
-      const checkPlace = this instanceof XIBLE.NodeInput ? 'origin' : 'destination';
+      const end = this instanceof XIBLE.NodeInput ? 'origin' : 'destination';
       if (this.type) {
         this.connectors
-        .filter(conn => conn[checkPlace].type && conn[checkPlace].type !== this.type)
+        .filter(conn => conn[end].type && conn[end].type !== this.type)
         .forEach(conn => conn.delete());
       }
     }
