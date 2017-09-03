@@ -20,7 +20,7 @@
     "wrapper"
   ],
   "scripts": {
-    "prepublish": "gulp browserify && npm shrinkwrap --only=prod"
+    "prepublishOnly": "gulp browserify && npm shrinkwrap --only=prod"
   },
   "dependencies": {
     "ws": "*",
