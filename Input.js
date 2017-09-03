@@ -18,11 +18,11 @@ module.exports = (XIBLE) => {
       const connector = connectors[0];
       return this.matchesTypeDef(connector)
       .then(matchesTypeDef =>
-        this.node !== connectors[0].origin.node &&
+        this.node !== connector.origin.node &&
         (
-          (!this.type && connectors[0].origin.type !== 'trigger') ||
-          (!connectors[0].origin.type && this.type !== 'trigger') ||
-          matchesTypeDef
+          (!this.type && connector.origin.type !== 'trigger') ||
+          (!connector.origin.type && this.type !== 'trigger') ||
+          connector.origin.type === this.type || matchesTypeDef
         )
       );
     }

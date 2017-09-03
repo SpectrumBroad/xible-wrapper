@@ -22,7 +22,7 @@ module.exports = (XIBLE) => {
         (
           (!this.type && connector.destination.type !== 'trigger') ||
           (!connector.destination.type && this.type !== 'trigger') ||
-          matchesTypeDef
+          connector.destination.type === this.type || matchesTypeDef
         )
       );
     }
