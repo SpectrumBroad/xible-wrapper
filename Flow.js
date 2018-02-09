@@ -179,7 +179,7 @@ module.exports = (XIBLE) => {
       return req.send();
     }
 
-    start() {
+    start(params) {
       this.undirect();
 
       if (!this._id) {
@@ -189,7 +189,9 @@ module.exports = (XIBLE) => {
       const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/start`);
       this.emit('start');
 
-      return req.send();
+      return req.send({
+        params
+      });
     }
 
     delete() {
