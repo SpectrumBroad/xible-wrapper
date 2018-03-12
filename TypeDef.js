@@ -26,7 +26,7 @@ module.exports = (XIBLE) => {
       // check for extends
       if (typeof typeDef.extends === 'string') {
         const extendsTypeDef = TYPE_DEFS[typeDef.extends];
-        if (!extendsTypeDef) {
+        if (!extendsTypeDef || extendsTypeDef === typeDef) {
           return false;
         }
 
