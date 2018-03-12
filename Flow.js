@@ -3,80 +3,70 @@
 module.exports = (XIBLE) => {
   const EventEmitter = require('events').EventEmitter;
 
+  const constructed = {};
+
   class Flow extends EventEmitter {
     constructor(obj) {
       super();
 
       this._id = null;
       this.runnable = true;
-      this.state = Flow.STATE_STOPPED;
+      this._instances = null;
 
       XIBLE.on('message', (json) => {
-        if (json.flowId !== this._id) {
+        if (
+          json.method.substring(0, 11) !== 'xible.flow.' ||
+          !json.flow ||
+          json.flow._id !== this._id
+        ) {
           return;
         }
 
-        switch (json.method) {
-          case 'xible.flow.loadJson':
-            this.runnable = json.runnable;
-            this.emit('loadJson');
-            break;
+        this.runnable = json.flow.runnable;
 
-          case 'xible.flow.removeAllStatuses':
-            this.removeAllStatuses();
-            this.emit('removeAllStatuses');
-            break;
-
-          case 'xible.flow.initializing':
-            this.state = Flow.STATE_INITIALIZING;
-            this.emit('initializing', json);
-            break;
-
-          case 'xible.flow.initialized':
-            this.state = Flow.STATE_INITIALIZED;
-            this.emit('initialized', json);
-            break;
-
-          case 'xible.flow.starting':
-            this.runnable = true;
-            this.state = Flow.STATE_STARTING;
-            if (json.directed) {
-              this.directed = true;
-            } else {
-              this.directed = false;
-            }
-            this.emit('starting', json);
-            break;
-
-          case 'xible.flow.started':
-            this.runnable = true;
-            this.state = Flow.STATE_STARTED;
-            if (json.directed) {
-              this.directed = true;
-            } else {
-              this.directed = false;
-            }
-            this.emit('started', json);
-            break;
-
-          case 'xible.flow.stopping':
-            this.runnable = true;
-            this.state = Flow.STATE_STOPPING;
-            this.emit('stopping', json);
-            break;
-
-          case 'xible.flow.stopped':
-            this.state = Flow.STATE_STOPPED;
-            this.emit('stopped', json);
-            break;
+        if (json.flowInstance) {
+          json.flowInstance = new XIBLE.FlowInstance(json.flowInstance);
         }
+
+        if (json.flow) {
+          json.flow = Flow.constructFromDoc(json.flow);
+        }
+
+        this.emit(json.method.substring(11), json);
       });
 
       if (obj) {
         Object.assign(this, obj);
       }
 
+      if (this._id) {
+        constructed[this._id] = this;
+      }
+
       this.removeAllListeners();
+
+      this.on('delete', () => {
+        delete constructed[this._id];
+      });
+
+      this.on('createInstance', ({ flowInstance: instance }) => {
+        if (this._instances) {
+          this._instances.push(instance);
+        }
+      });
+
+      this.on('deleteInstance', ({ flowInstance: instance }) => {
+        if (!this._instances) {
+          return;
+        }
+
+        const cachedInstanceIndex = this._instances.findIndex(
+          cachedInstance => instance._id === cachedInstance._id
+        );
+        if (cachedInstanceIndex > -1) {
+          this._instances.splice(cachedInstanceIndex, 1);
+        }
+      });
 
       // setup viewstate
       this.viewState = {
@@ -124,92 +114,40 @@ module.exports = (XIBLE) => {
       return req.toJson();
     }
 
-    static getById(id) {
+    static async getById(id) {
       const req = XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(id)}`);
-      return req.toObject(Flow);
+      return this.constructFromDoc(await req.toJson());
     }
 
-    static getAll() {
+    static async getAll() {
       const req = XIBLE.http.request('GET', '/api/flows');
-      return req.toObject(Object)
-      .then((flows) => {
-        Object.keys(flows)
-        .forEach((flowId) => {
-          flows[flowId] = new Flow(flows[flowId]);
-        });
-
-        return flows;
+      const docs = await req.toJson();
+      const flows = {};
+      Object.keys(docs)
+      .forEach((flowId) => {
+        flows[flowId] = this.constructFromDoc(docs[flowId]);
       });
+
+      return flows;
     }
 
-    static get STATE_STOPPED() {
-      return 0;
-    }
-
-    static get STATE_STOPPING() {
-      return 1;
-    }
-
-    static get STATE_INITIALIZING() {
-      return 2;
-    }
-
-    static get STATE_INITIALIZED() {
-      return 3;
-    }
-
-    static get STATE_STARTING() {
-      return 4;
-    }
-
-    static get STATE_STARTED() {
-      return 5;
-    }
-
-    stop() {
-      this.undirect();
-
-      if (!this._id) {
-        return Promise.reject('no id');
+    static constructFromDoc(doc) {
+      if (constructed[doc._id]) {
+        return constructed[doc._id];
       }
-
-      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/stop`);
-      this.emit('stop');
-
-      return req.send();
-    }
-
-    start(params) {
-      this.undirect();
-
-      if (!this._id) {
-        return Promise.reject('no id');
-      }
-
-      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/start`);
-      this.emit('start');
-
-      return req.send({
-        params
-      });
+      return new Flow(doc);
     }
 
     delete() {
-      this.undirect();
-
       if (!this._id) {
         return Promise.resolve();
       }
 
       const req = XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this._id)}`);
-      this.emit('delete');
-
       return req.send();
     }
 
     save(asNew) {
-      this.undirect();
-
       return new Promise((resolve, reject) => {
         const json = this.toJson();
         let req;
@@ -232,57 +170,44 @@ module.exports = (XIBLE) => {
       });
     }
 
-    undirect() {
-      this.emit('undirect');
-    }
-
-    direct(related) {
-      // throttle
-      if (this._lastPostDirectFunction || this._lastDirectPromise) {
-        const hasFunction = !!this._lastPostDirectFunction;
-
-        this._lastPostDirectFunction = () => {
-          this.direct(related);
-          this._lastPostDirectFunction = null;
-        };
-
-        if (!hasFunction) {
-          this._lastDirectPromise.then(this._lastPostDirectFunction);
-        }
-
-        return Promise.resolve();
-      }
-
-      // ensure this flow is saved first
-      if (!this._id) {
-        return this.save()
-        .then(() => this.direct(related));
-      }
-
-      if (!related) {
-        return Promise.reject('related argument missing');
-      }
-
-      this._lastDirectPromise = new Promise((resolve, reject) => {
-        const nodes = related.nodes.map(node => ({
+    createInstance({ params, directNodes, start } = {}) {
+      if (directNodes) {
+        directNodes = directNodes.map(node => ({
           _id: node._id,
           data: node.data
         }));
+      }
 
-        const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/direct`);
-        req.toString(nodes)
-        .then(() => {
-          resolve(this);
-          this._lastDirectPromise = null;
-
-          this.emit('direct');
-        })
-        .catch((err) => {
-          reject(err);
-        });
+      return XIBLE.http.request('POST', `/api/flows/${encodeURIComponent(this._id)}/instances`)
+      .toObject(XIBLE.FlowInstance, {
+        params,
+        directNodes,
+        start
       });
+    }
 
-      return this._lastDirectPromise;
+    async getInstances() {
+      if (!this._instances) {
+        this._instances = await XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(this._id)}/instances`)
+        .toObjectArray(XIBLE.FlowInstance);
+      }
+
+      return this._instances;
+    }
+
+    async getInstanceById(id) {
+      const instances = await this.getInstances();
+      return instances.find(instance => instance._id === id);
+    }
+
+    stopAllInstances() {
+      return XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/stop`)
+      .send();
+    }
+
+    deleteAllInstances() {
+      return XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this._id)}/instances`)
+      .send();
     }
 
     // TODO: this functions isn't 'pretty'

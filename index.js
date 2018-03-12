@@ -28,6 +28,7 @@ class XibleWrapper extends EventEmitter {
     this.webSocket = null;
 
     this.Flow = require('./Flow.js')(this);
+    this.FlowInstance = require('./FlowInstance.js')(this);
     this.Node = require('./Node.js')(this);
     this.NodeIo = require('./Io.js')(this);
     this.NodeInput = require('./Input.js')(this);
@@ -127,7 +128,9 @@ class XibleWrapper extends EventEmitter {
         * @type {Object}
         */
         json = JSON.parse(event.data);
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
 
       if (!json) {
         return;
