@@ -206,6 +206,20 @@ module.exports = (XIBLE) => {
 
     removeAllStatuses() { // eslint-disable-line class-methods-use-this
     }
+
+    toJSON() {
+      return {
+        _id: this._id,
+        connectors: this.connectors,
+        inputs: this.inputs,
+        outputs: this.outputs,
+        left: this.left,
+        top: this.top,
+        data: this.data,
+        type: this.type,
+        name: this.name
+      };
+    }
   }
 
   return Node;
