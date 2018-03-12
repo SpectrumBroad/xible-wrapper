@@ -23,31 +23,39 @@ module.exports = (XIBLE) => {
 
       this.setType(this.type);
 
-      if (typeof this.singleType === 'boolean' && this.singleType && !this.type) {
-        this.setSingleType(this.singleType);
-      }
-
       if (typeof this.maxConnectors === 'number') {
         this.setMaxConnectors(this.maxConnectors);
       }
 
-      if (typeof this.assignsOutputType === 'string') {
-        this.on('settype', () => {
-          if (!this.node) {
-            return;
-          }
-          this.node.getOutputByName(this.assignsOutputType)
-          .setType(this.type);
+      if (Array.isArray(this.assignsOutputTypes)) {
+        if (!this.singleType) {
+          this.setSingleType(true);
+        }
+
+        this.assignsOutputTypes.forEach((assignsOutputType) => {
+          this.on('settype', () => {
+            if (!this.node) {
+              return;
+            }
+            this.node.getOutputByName(assignsOutputType)
+            .setType(this.type);
+          });
         });
       }
 
-      if (typeof this.assignsInputType === 'string') {
-        this.on('settype', () => {
-          if (!this.node) {
-            return;
-          }
-          this.node.getInputByName(this.assignsInputType)
-          .setType(this.type);
+      if (Array.isArray(this.assignsInputTypes)) {
+        if (!this.singleType) {
+          this.setSingleType(true);
+        }
+
+        this.assignsInputTypes.forEach((assignsInputType) => {
+          this.on('settype', () => {
+            if (!this.node) {
+              return;
+            }
+            this.node.getInputByName(assignsInputType)
+            .setType(this.type);
+          });
         });
       }
 
@@ -69,8 +77,7 @@ module.exports = (XIBLE) => {
       this.singleType = bool;
 
       // TODO: unhook eventlisteners when changing singleType
-
-      if (this.singleType) {
+      if (bool) {
         this.on('attach', (conn) => {
           const connLoc = conn[this instanceof XIBLE.NodeInput ? 'origin' : 'destination'];
           if (connLoc && connLoc.type) {
@@ -151,11 +158,15 @@ module.exports = (XIBLE) => {
       }
 
       // verify type
-      const end = this instanceof XIBLE.NodeInput ? 'origin' : 'destination';
       if (this.type) {
-        this.connectors
-        .filter(conn => conn[end].type && conn[end].type !== this.type)
-        .forEach(conn => conn.delete());
+        this.connectors.forEach((connector) => {
+          this.matchesTypeDef(connector)
+          .then((matchesTypeDef) => {
+            if (!matchesTypeDef) {
+              connector.delete();
+            }
+          });
+        });
       }
     }
 
