@@ -37,8 +37,13 @@ module.exports = (XIBLE) => {
             if (!this.node) {
               return;
             }
-            this.node.getOutputByName(assignsOutputType)
-            .setType(this.type);
+
+            const output = this.node.getOutputByName(assignsOutputType);
+            if (!this.connectors.length) {
+              output.setType(output.structureType);
+            } else {
+              output.setType(this.type);
+            }
           });
         });
       }
@@ -53,8 +58,13 @@ module.exports = (XIBLE) => {
             if (!this.node) {
               return;
             }
-            this.node.getInputByName(assignsInputType)
-            .setType(this.type);
+
+            const input = this.node.getInputByName(assignsInputType);
+            if (!this.connectors.length) {
+              input.setType(input.structureType);
+            } else {
+              input.setType(this.type);
+            }
           });
         });
       }
@@ -87,7 +97,7 @@ module.exports = (XIBLE) => {
 
         this.on('detach', () => {
           if (!this.connectors.length) {
-            this.setType(null);
+            this.setType(this.structureType);
           }
         });
       }
@@ -108,6 +118,10 @@ module.exports = (XIBLE) => {
     }
 
     setType(type) {
+      if (!type && !this.singleType) {
+        this.setSingleType(true);
+      }
+
       if (this.type === type) {
         return this;
       }
