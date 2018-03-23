@@ -117,6 +117,13 @@ module.exports = (XIBLE) => {
       return this;
     }
 
+    /**
+     * Sets the type of the io to the given value.
+     * Returns immediately if the type is already set.
+     * Ensures setSingleType is set to true if no type is supplied, and singleType is not yet set.
+     * @param {String} type
+     * @returns {Io} Returns this io for daisy chaining.
+     */
     setType(type) {
       if (!type && !this.singleType) {
         this.setSingleType(true);
