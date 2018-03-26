@@ -13,6 +13,14 @@ module.exports = (XIBLE) => {
 
       this.removeAllListeners();
 
+      if (!this.assignsOutputTypes) {
+        this.assignsOutputTypes = [];
+      }
+
+      if (!this.assignsInputTypes) {
+        this.assignsInputTypes = [];
+      }
+
       this.connectors = [];
 
       if (!this._id) {
@@ -27,7 +35,7 @@ module.exports = (XIBLE) => {
         this.setMaxConnectors(this.maxConnectors);
       }
 
-      if (Array.isArray(this.assignsOutputTypes)) {
+      if (this.assignsOutputTypes.length) {
         if (!this.singleType) {
           this.setSingleType(true);
         }
@@ -40,7 +48,9 @@ module.exports = (XIBLE) => {
 
             const output = this.node.getOutputByName(assignsOutputType);
             if (!this.connectors.length) {
-              output.setType(output.structureType);
+              if (!this.hasOtherAssignments(assignsOutputType, false)) {
+                output.setType(output.structureType);
+              }
             } else {
               output.setType(this.type);
             }
@@ -48,7 +58,7 @@ module.exports = (XIBLE) => {
         });
       }
 
-      if (Array.isArray(this.assignsInputTypes)) {
+      if (this.assignsInputTypes.length) {
         if (!this.singleType) {
           this.setSingleType(true);
         }
@@ -61,7 +71,9 @@ module.exports = (XIBLE) => {
 
             const input = this.node.getInputByName(assignsInputType);
             if (!this.connectors.length) {
-              input.setType(input.structureType);
+              if (!this.hasOtherAssignments(assignsInputType, true)) {
+                input.setType(input.structureType);
+              }
             } else {
               input.setType(this.type);
             }
@@ -76,6 +88,26 @@ module.exports = (XIBLE) => {
       if (this.global) {
         this.setGlobal(true);
       }
+    }
+
+    /**
+     * Verifies if there are any other inputs or outputs that are assigning a type while being connected.
+     * @param {String} assignsIoName If provided, this will validatee if the given assignsIoName is part of an assignment.
+     * @param {Boolean} assignsIoType True for verifying assignsInputTypes, false for assignsOutputTypes on any io.
+     * @returns {Boolean} True if another input or output is already forcing assigment, false if not.
+     */
+    hasOtherAssignments(assignsIoName, assignsIoType) {
+      const ioType = this instanceof XIBLE.NodeInput;
+      return this.node.getInputs()
+      .concat(this.node.getOutputs())
+      .filter(io => io !== this)
+      .some(io =>
+        io.connectors.length &&
+        (
+          io[ioType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(this.name) ||
+          (assignsIoName && io[assignsIoType ? 'assignsInputTypes' : 'assignsOutputTypes' ].includes(assignsIoName))
+        )
+      );
     }
 
     /**
@@ -97,7 +129,9 @@ module.exports = (XIBLE) => {
 
         this.on('detach', () => {
           if (!this.connectors.length) {
-            this.setType(this.structureType);
+            if (!this.hasOtherAssignments()) {
+              this.setType(this.structureType);
+            }
           }
         });
       }
