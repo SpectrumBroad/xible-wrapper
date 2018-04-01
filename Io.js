@@ -55,6 +55,10 @@ module.exports = (XIBLE) => {
             }
 
             const output = this.node.getOutputByName(assignsOutputType);
+            if (!output) {
+              return;
+            }
+
             if (!this.connectors.length) {
               if (!this.hasOtherAssignments(assignsOutputType, false)) {
                 output.setType(output.structureType);
@@ -78,6 +82,10 @@ module.exports = (XIBLE) => {
             }
 
             const input = this.node.getInputByName(assignsInputType);
+            if (!input) {
+              return;
+            }
+
             if (!this.connectors.length) {
               if (!this.hasOtherAssignments(assignsInputType, true)) {
                 input.setType(input.structureType);
@@ -244,6 +252,8 @@ module.exports = (XIBLE) => {
     }
 
     delete() {
+      this.removeAllListeners();
+
       while (this.connectors.length) {
         this.connectors[0].delete();
       }
