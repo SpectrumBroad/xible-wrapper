@@ -13,6 +13,14 @@ module.exports = (XIBLE) => {
 
       this.removeAllListeners();
 
+      /* Enabling this involves setting event listeners.
+       * So it needs to be false to begin with,
+       * so a setSingleType() call can fix everything properly.
+       * This setting is only managed from the xible-wrapper,
+       * so this is safe to force to false.
+       */ 
+      this.singleType = false;
+
       if (!this.assignsOutputTypes) {
         this.assignsOutputTypes = [];
       }
