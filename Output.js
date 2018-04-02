@@ -24,7 +24,10 @@ module.exports = (XIBLE) => {
         }
 
         // trigger can only connect to other triggers
-        if (connector.destination.type === 'trigger' && this.type !== 'trigger') {
+        if (
+          (connector.destination.type === 'trigger' && this.type !== 'trigger') ||
+          (connector.destination.type !== 'trigger' && this.type === 'trigger')
+        ) {
           return false;
         }
 
