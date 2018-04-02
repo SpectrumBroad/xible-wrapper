@@ -17,16 +17,19 @@ module.exports = (XIBLE) => {
 
       for (let i = 0; i < connectors.length; i += 1) {
         const connector = connectors[i];
-        const matchesTypeDef = await this.matchesTypeDef(connector);
 
-        if (
-          !(this.node !== connector.destination.node &&
-          (
-            (!this.type && connector.destination.type !== 'trigger') ||
-            (!connector.destination.type && this.type !== 'trigger') ||
-            connector.destination.type === this.type || matchesTypeDef
-          ))
-        ) {
+        // don't allow node to connect to itself directly
+        if (this.node === connector.destination.node) {
+          return false;
+        }
+
+        // trigger can only connect to other triggers
+        if (connector.destination.type === 'trigger' && this.type !== 'trigger') {
+          return false;
+        }
+
+        const matchesTypeDef = await this.matchesTypeDef(connector);
+        if (!matchesTypeDef) {
           return false;
         }
       }
