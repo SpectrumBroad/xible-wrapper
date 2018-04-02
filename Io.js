@@ -35,23 +35,53 @@ module.exports = (XIBLE) => {
         this.setMaxConnectors(this.maxConnectors);
       }
 
+      const outGoing = this instanceof XIBLE.NodeOutput;
       this.on('attach', (conn) => {
+        // ignore if this io has a proper type
+        if (this.structureType) {
+          return;
+        }
+
+        // outputs get special treatment
+        if (this instanceof XIBLE.NodeOutput) {
+          return;
+        }
+
+        // ignore if there's still a connector with a type set
         if (
-          this.structureType ||
-          (!this.assignsOutputTypes.length &&
-          !this.assignsInputTypes.length)
+          this.connectors.some(connector =>
+            connector !== conn &&
+            connector[outGoing ? 'destination' : 'origin'] &&
+            connector[outGoing ? 'destination' : 'origin'].type
+          )
         ) {
           return;
         }
 
-        const connLoc = conn[this instanceof XIBLE.NodeInput ? 'origin' : 'destination'];
+        // ignore if other assignments are applicable
+        if (this.hasOtherAssignments()) {
+          return;
+        }
+
+        const connLoc = conn[outGoing ? 'destination' : 'origin'];
         if (connLoc) {
           this.setType(connLoc.type);
         }
       });
 
       this.on('detach', () => {
-        if (this.connectors.length || this.hasOtherAssignments()) {
+        // ignore if there's still a connector with a type set
+        if (
+          this.connectors.some(connector =>
+            connector[outGoing ? 'destination' : 'origin'] &&
+            connector[outGoing ? 'destination' : 'origin'].type
+          )
+        ) {
+          return;
+        }
+
+        // ignore if other assignments are applicable
+        if (this.hasOtherAssignments()) {
           return;
         }
 
