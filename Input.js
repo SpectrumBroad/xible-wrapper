@@ -10,21 +10,28 @@ module.exports = (XIBLE) => {
       }
     }
 
-    matchesConnectors(connectors) {
+    async matchesConnectors(connectors) {
       if (!connectors) {
         return false;
       }
 
-      const connector = connectors[0];
-      return this.matchesTypeDef(connector)
-      .then(matchesTypeDef =>
-        this.node !== connector.origin.node &&
-        (
-          (!this.type && connector.origin.type !== 'trigger') ||
-          (!connector.origin.type && this.type !== 'trigger') ||
-          connector.origin.type === this.type || matchesTypeDef
-        )
-      );
+      for (let i = 0; i < connectors.length; i += 1) {
+        const connector = connectors[i];
+        const matchesTypeDef = await this.matchesTypeDef(connector);
+
+        if (
+          !(this.node !== connector.origin.node &&
+          (
+            (!this.type && connector.origin.type !== 'trigger') ||
+            (!connector.origin.type && this.type !== 'trigger') ||
+            connector.origin.type === this.type || matchesTypeDef
+          ))
+        ) {
+          return false;
+        }
+      }
+
+      return true;
     }
   }
 
