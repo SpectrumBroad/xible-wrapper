@@ -13,14 +13,6 @@ module.exports = (XIBLE) => {
 
       this.removeAllListeners();
 
-      /* Enabling this involves setting event listeners.
-       * So it needs to be false to begin with,
-       * so a setSingleType() call can fix everything properly.
-       * This setting is only managed from the xible-wrapper,
-       * so this is safe to force to false.
-       */ 
-      this.singleType = false;
-
       if (!this.assignsOutputTypes) {
         this.assignsOutputTypes = [];
       }
@@ -43,11 +35,30 @@ module.exports = (XIBLE) => {
         this.setMaxConnectors(this.maxConnectors);
       }
 
-      if (this.assignsOutputTypes.length) {
-        if (!this.singleType) {
-          this.setSingleType(true);
+      this.on('attach', (conn) => {
+        if (
+          this.structureType ||
+          (!this.assignsOutputTypes.length &&
+          !this.assignsInputTypes.length)
+        ) {
+          return;
         }
 
+        const connLoc = conn[this instanceof XIBLE.NodeInput ? 'origin' : 'destination'];
+        if (connLoc && connLoc.type) {
+          this.setType(connLoc.type);
+        }
+      });
+
+      this.on('detach', () => {
+        if (this.connectors.length || this.hasOtherAssignments()) {
+          return;
+        }
+
+        this.setType(this.structureType);
+      });
+
+      if (this.assignsOutputTypes.length) {
         this.assignsOutputTypes.forEach((assignsOutputType) => {
           this.on('settype', () => {
             if (!this.node) {
@@ -71,10 +82,6 @@ module.exports = (XIBLE) => {
       }
 
       if (this.assignsInputTypes.length) {
-        if (!this.singleType) {
-          this.setSingleType(true);
-        }
-
         this.assignsInputTypes.forEach((assignsInputType) => {
           this.on('settype', () => {
             if (!this.node) {
@@ -126,35 +133,6 @@ module.exports = (XIBLE) => {
       );
     }
 
-    /**
-    * If this is set to true, and type===null,
-    * it's verified that only one type of connector is hooked up.
-    * @param {Boolean} singleType
-    */
-    setSingleType(bool) {
-      this.singleType = bool;
-
-      // TODO: unhook eventlisteners when changing singleType
-      if (bool) {
-        this.on('attach', (conn) => {
-          const connLoc = conn[this instanceof XIBLE.NodeInput ? 'origin' : 'destination'];
-          if (connLoc && connLoc.type) {
-            this.setType(connLoc.type);
-          }
-        });
-
-        this.on('detach', () => {
-          if (!this.connectors.length) {
-            if (!this.hasOtherAssignments()) {
-              this.setType(this.structureType);
-            }
-          }
-        });
-      }
-
-      this.verifyConnectors();
-    }
-
     setGlobal(global) {
       this.global = global;
       return this;
@@ -170,15 +148,10 @@ module.exports = (XIBLE) => {
     /**
      * Sets the type of the io to the given value.
      * Returns immediately if the type is already set.
-     * Ensures setSingleType is set to true if no type is supplied, and singleType is not yet set.
      * @param {String} type
      * @returns {Io} Returns this io for daisy chaining.
      */
     setType(type) {
-      if (!type && !this.singleType) {
-        this.setSingleType(true);
-      }
-
       if (this.type === type) {
         return this;
       }
