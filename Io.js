@@ -181,6 +181,10 @@ module.exports = (XIBLE) => {
     matchesTypeDef(connector) {
       return XIBLE.TypeDef.getAll()
       .then((typeDefs) => {
+        if (!connector.origin || !connector.destination) {
+          return false;
+        }
+
         const outGoing = this instanceof XIBLE.NodeOutput;
         const originTypeDef = typeDefs[(outGoing ? this.type : connector.origin.type)];
         const destinationTypeDef = typeDefs[(outGoing ? connector.destination.type : this.type)];
