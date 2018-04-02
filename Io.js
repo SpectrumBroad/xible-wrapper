@@ -45,7 +45,7 @@ module.exports = (XIBLE) => {
         }
 
         const connLoc = conn[this instanceof XIBLE.NodeInput ? 'origin' : 'destination'];
-        if (connLoc && connLoc.type) {
+        if (connLoc) {
           this.setType(connLoc.type);
         }
       });
@@ -158,8 +158,8 @@ module.exports = (XIBLE) => {
 
       // set new type
       this.type = type;
-      this.verifyConnectors();
       this.emit('settype', type);
+      this.verifyConnectors();
 
       return this;
     }
@@ -186,8 +186,9 @@ module.exports = (XIBLE) => {
         const destinationTypeDef = typeDefs[(outGoing ? connector.destination.type : this.type)];
 
         if (!destinationTypeDef || !originTypeDef) {
-          return false;
+          return true;
         }
+
         return destinationTypeDef.matches(originTypeDef);
       });
     }
@@ -202,16 +203,20 @@ module.exports = (XIBLE) => {
       }
 
       // verify type
-      if (this.type) {
-        this.connectors.forEach((connector) => {
-          this.matchesTypeDef(connector)
-          .then((matchesTypeDef) => {
-            if (!matchesTypeDef) {
-              connector.delete();
-            }
-          });
+      const outGoing = this instanceof XIBLE.NodeOutput;
+      this.connectors.forEach((connector) => {
+        if (!connector[outGoing ? 'destination' : 'origin'].structureType) {
+          connector[outGoing ? 'destination' : 'origin'].emit('attach', connector);
+          return;
+        }
+
+        this.matchesTypeDef(connector)
+        .then((matchesTypeDef) => {
+          if (!matchesTypeDef) {
+            connector.delete();
+          }
         });
-      }
+      });
     }
 
     hide() {
