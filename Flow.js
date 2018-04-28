@@ -128,6 +128,14 @@ module.exports = (XIBLE) => {
         flows[flowId] = this.constructFromDoc(docs[flowId]);
       });
 
+      // clear any non existing flows.
+      Object.keys(constructed)
+      .forEach((flowId) => {
+        if (!flows[flowId]) {
+          delete constructed[flowId];
+        }
+      });
+
       return flows;
     }
 
