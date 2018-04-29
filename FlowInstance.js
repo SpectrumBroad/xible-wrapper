@@ -58,50 +58,50 @@ module.exports = (XIBLE) => {
       return req.send();
     }
 
-    direct(nodes) {
+    async direct(nodes) {
       // throttle
-      if (this._lastPostDirectFunction || this._lastDirectPromise) {
-        const hasFunction = !!this._lastPostDirectFunction;
-
-        this._lastPostDirectFunction = () => {
-          this.direct(related);
+      if (this._lastPostDirectFunction || this._lastDirectPromise || this._lastPostDirectPromise) {
+        this._lastPostDirectFunction = async () => {
+          this._lastPostDirectPromise = null;
           this._lastPostDirectFunction = null;
+          await this.direct(nodes);
         };
 
-        if (!hasFunction) {
-          this._lastDirectPromise.then(this._lastPostDirectFunction);
+        if (!this._lastPostDirectPromise) {
+          this._lastPostDirectPromise = this._lastDirectPromise
+          .then(() => this._lastPostDirectFunction());
         }
 
-        return Promise.resolve();
+        return this._lastPostDirectPromise;
       }
 
       // ensure this flow is saved first
       if (!this._id) {
-        return this.save()
-        .then(() => this.direct(nodes));
+        await this.save();
+        return this.direct(nodes);
       }
 
       if (!nodes) {
-        return Promise.reject('related argument missing');
+        throw new Error('"nodes" argument missing');
       }
 
-      this._lastDirectPromise = new Promise((resolve, reject) => {
+      this._lastDirectPromise = new Promise(async (resolve, reject) => {
         nodes = nodes.map(node => ({
           _id: node._id,
           data: node.data
         }));
 
-        const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/direct`);
-        req.toString(nodes)
-        .then(() => {
-          resolve(this);
+        try {
+          await XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/direct`)
+          .toString(nodes);
           this._lastDirectPromise = null;
 
           this.emit('direct');
-        })
-        .catch((err) => {
+          resolve();
+        } catch (err) {
+          this._lastDirectPromise = null;
           reject(err);
-        });
+        }
       });
 
       return this._lastDirectPromise;
