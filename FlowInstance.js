@@ -3,14 +3,24 @@
 module.exports = (XIBLE) => {
   const EventEmitter = require('events').EventEmitter;
 
+  const constructed = {};
+
   class FlowInstance extends EventEmitter {
     constructor(obj) {
+      if (obj && obj._id && constructed[obj._id]) {
+        return constructed[obj._id];
+      }
+
       super();
 
       this.state = FlowInstance.STATE_STOPPED;
 
       if (obj) {
         Object.assign(this, obj);
+      }
+
+      if (this._id) {
+        constructed[this._id] = this;
       }
 
       XIBLE.on('message', (json) => {
@@ -27,7 +37,13 @@ module.exports = (XIBLE) => {
         this.params = json.flowInstance.params;
         this.usage = json.flowInstance.usage;
 
+        json.flowInstance = this;
+
         this.emit(json.method.substring(20), json);
+      });
+
+      this.on('delete', () => {
+        delete constructed[this._id];
       });
     }
 
