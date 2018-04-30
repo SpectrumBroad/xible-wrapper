@@ -1,6 +1,8 @@
 # XIBLE
 A visual programming language. Visit <https://xible.io> for more information.
 
+[![npm](http://img.shields.io/npm/v/xible-wrapper.svg?style=flat-square)](http://www.npmjs.org/xible-wrapper)
+
 # Description
 This npm package can be used as a nodejs wrapper to interface with a XIBLE instance.
 
