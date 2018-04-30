@@ -49,15 +49,9 @@ module.exports = (XIBLE) => {
       }
     }
 
-    static getAll() {
+    static async getAll() {
       const req = XIBLE.http.request('GET', '/api/nodes');
-      return req.toJson().then((nodes) => {
-        Object.keys(nodes).forEach((nodeName) => {
-          nodes[nodeName] = new Node(nodes[nodeName]);
-        });
-
-        return nodes;
-      });
+      return req.toObjectMap(Node);
     }
 
     static getAllInputObjectNodes(node) {
