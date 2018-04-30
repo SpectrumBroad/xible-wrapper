@@ -33,6 +33,10 @@ xibleWrapperInstance.autoReconnect();
 xibleWrapperInstance.connect();
 </code></pre>
 
+## Get all flows
+<pre><code>const flows = await xibleWrapperInstance.Flow.getAll();
+console.log(flows);</code></pre>
+
 ## Creating a flow instance
 This creates a flow instance and starts it immediately. After 10 seconds it is forcefully stopped and the instance removed.
 <pre><code>// get the flow named 'my flow'
@@ -51,4 +55,5 @@ setTimeout(async () => {
 
 ## Read out settings
 <pre><code>const registryNodepackAllowPublish = await xibleWrapper.Config.getValue('registry.nodepacks.allowpublish');
+console.log(registryNodepackAllowPublish);
 </code></pre>
