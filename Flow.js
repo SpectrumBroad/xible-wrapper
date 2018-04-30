@@ -22,15 +22,12 @@ module.exports = (XIBLE) => {
           return;
         }
 
-        this.runnable = json.flow.runnable;
-
         if (json.flowInstance) {
           json.flowInstance = new XIBLE.FlowInstance(json.flowInstance);
         }
 
-        if (json.flow) {
-          json.flow = Flow.constructFromDoc(json.flow);
-        }
+        this.runnable = json.flow.runnable;
+        json.flow = this;
 
         this.emit(json.method.substring(11), json);
       });
