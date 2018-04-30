@@ -121,12 +121,7 @@ module.exports = (XIBLE) => {
 
     static async getAll() {
       const req = XIBLE.http.request('GET', '/api/flows');
-      const docs = await req.toJson();
-      const flows = {};
-      Object.keys(docs)
-      .forEach((flowId) => {
-        flows[flowId] = this.constructFromDoc(docs[flowId]);
-      });
+      const flows = await req.toObjectMap(Flow);
 
       // clear any non existing flows.
       Object.keys(constructed)
