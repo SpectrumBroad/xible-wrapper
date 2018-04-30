@@ -7,6 +7,10 @@ module.exports = (XIBLE) => {
 
   class Flow extends EventEmitter {
     constructor(obj) {
+      if (obj && obj._id && constructed[obj._id]) {
+        return constructed[obj._id];
+      }
+
       super();
 
       this._id = null;
@@ -112,8 +116,8 @@ module.exports = (XIBLE) => {
     }
 
     static async getById(id) {
-      const req = XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(id)}`);
-      return this.constructFromDoc(await req.toJson());
+      return XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(id)}`)
+      .toObject(Flow);
     }
 
     static async getAll() {
@@ -129,13 +133,6 @@ module.exports = (XIBLE) => {
       });
 
       return flows;
-    }
-
-    static constructFromDoc(doc) {
-      if (constructed[doc._id]) {
-        return constructed[doc._id];
-      }
-      return new Flow(doc);
     }
 
     delete() {
