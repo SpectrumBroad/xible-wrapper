@@ -4,7 +4,7 @@
 const WebSocket = require('ws');
 
 const oohttp = require('oohttp');
-const EventEmitter = require('events').EventEmitter;
+const { EventEmitter } = require('events');
 
 class XibleWrapper extends EventEmitter {
   constructor(obj) {

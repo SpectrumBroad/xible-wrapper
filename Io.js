@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (XIBLE) => {
-  const EventEmitter = require('events').EventEmitter;
+  const { EventEmitter } = require('events');
 
   class Io extends EventEmitter {
     constructor(name, obj) {
