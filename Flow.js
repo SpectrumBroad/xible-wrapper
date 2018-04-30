@@ -106,9 +106,9 @@ module.exports = (XIBLE) => {
       });
     }
 
-    static validatePermissions() {
-      const req = XIBLE.http.request('GET', '/api/validateFlowPermissions');
-      return req.toJson();
+    static async validatePermissions() {
+      return XIBLE.http.request('GET', '/api/validateFlowPermissions')
+      .toJson();
     }
 
     static async getById(id) {
