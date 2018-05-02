@@ -269,7 +269,19 @@ module.exports = (XIBLE) => {
     }
 
     getNodeById(id) {
+      if (typeof id !== 'string') {
+        throw new TypeError('"id" argument must be typeof string');
+      }
+
       return this.nodes.find(node => node._id === id);
+    }
+
+    getNodesByName(name) {
+      if (typeof name !== 'string') {
+        throw new TypeError('"name" argument must be typeof string');
+      }
+
+      return this.nodes.filter(node => node.name === name);
     }
 
     addConnector(connector) {
