@@ -48,14 +48,23 @@ module.exports = (XIBLE) => {
     }
 
     /**
-    * Retrieves all typeDefs from the XIBLE API.
-    * @returns {Promise.<TypeDef[]>}
-    */
-    static getAll() {
+     * Returns the cached result for getAll().
+     * If there is no result yet, simply returns getAll().
+     * @private
+     */
+    static getAllCached() {
       if (TYPE_DEFS) {
         return Promise.resolve(TYPE_DEFS);
       }
 
+      return this.getAll();
+    }
+
+    /**
+    * Retrieves all typeDefs from the XIBLE API.
+    * @returns {Promise.<TypeDef[]>}
+    */
+    static getAll() {
       const req = XIBLE.http.request('GET', '/api/typedefs');
       return req.toObject(TypeDef)
       .then((typeDefs) => {

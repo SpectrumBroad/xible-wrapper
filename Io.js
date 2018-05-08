@@ -209,7 +209,7 @@ module.exports = (XIBLE) => {
     * @returns {Promise.<Boolean>}
     */
     matchesTypeDef(connector) {
-      return XIBLE.TypeDef.getAll()
+      return XIBLE.TypeDef.getAllCached()
       .then((typeDefs) => {
         if (!connector.origin || !connector.destination) {
           return false;
