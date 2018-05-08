@@ -5,6 +5,15 @@ module.exports = (XIBLE) => {
 
   const constructed = {};
 
+  // clean up constructed list on reconnect
+  XIBLE.on('open', async () => {
+    for (const flowId in constructed) {
+      if (!await Flow.getById(flowId)) {
+        delete constructed[flowId];
+      }
+    }
+  });
+
   class Flow extends EventEmitter {
     constructor(obj) {
       if (obj && obj._id && constructed[obj._id]) {
@@ -67,6 +76,10 @@ module.exports = (XIBLE) => {
         if (cachedInstanceIndex > -1) {
           this._instances.splice(cachedInstanceIndex, 1);
         }
+      });
+
+      XIBLE.on('open', () => {
+        this._instances = null;
       });
 
       // setup viewstate
