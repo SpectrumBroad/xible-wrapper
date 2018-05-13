@@ -17,7 +17,8 @@ The `dist` directory contains a transpiled version, ready for use in the browser
 # Examples
 
 ## Connecting to XIBLE
-<pre><code>const XibleWrapper = require('xible-wrapper');
+```javascript
+const XibleWrapper = require('xible-wrapper');
 
 const xibleWrapperInstance = new XibleWrapper('http://127.0.0.1:9600');
 xibleWrapperInstance.on('error', (err) => {
@@ -33,15 +34,18 @@ xibleWrapperInstance.autoReconnect();
 
 // connect
 xibleWrapperInstance.connect();
-</code></pre>
+```
 
 ## Get all flows
-<pre><code>const flows = await xibleWrapperInstance.Flow.getAll();
-console.log(flows);</code></pre>
+```javascript
+const flows = await xibleWrapperInstance.Flow.getAll();
+console.log(flows);
+```
 
 ## Creating a flow instance
 This creates a flow instance and starts it immediately. After 10 seconds it is forcefully stopped and the instance removed.
-<pre><code>// get the flow named 'my flow'
+```javascript
+// get the flow named 'my flow'
 const flow = await xibleWrapperInstance.Flow.getById('my flow');
 console.log('got flow', flow);
 
@@ -53,9 +57,11 @@ console.log('started', instance);
 setTimeout(async () => {
   await instance.delete();
   console.log('stopped and deleted');
-}, 10000);</code></pre>
+}, 10000);
+```
 
 ## Read out settings
-<pre><code>const registryNodepackAllowPublish = await xibleWrapper.Config.getValue('registry.nodepacks.allowpublish');
+```javascript
+const registryNodepackAllowPublish = await xibleWrapper.Config.getValue('registry.nodepacks.allowpublish');
 console.log(registryNodepackAllowPublish);
-</code></pre>
+````
