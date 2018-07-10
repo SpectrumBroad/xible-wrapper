@@ -359,6 +359,48 @@ module.exports = (XIBLE) => {
     }
 
     /**
+    * Returns all global inputs for a given type.
+    * @param {String} type Type of global inputs to be fetched.
+    * @returns {NodeOutput[]} The global nodeInputs.
+    */
+    getGlobalInputsByType(type) {
+      const inputs = [];
+
+      for (let i = 0; i < this.nodes.length; i += 1) {
+        const node = this.nodes[i];
+        for (const name in node.inputs) {
+          const input = node.inputs[name];
+          if (input.global && input.type === type) {
+            inputs.push(input);
+          }
+        }
+      }
+
+      return inputs;
+    }
+
+    /**
+    * Returns all global outputs with a given type.
+    * @param {String} type Type of global outputs to be fetched.
+    * @returns {NodeOutput[]} The global nodeOutputs.
+    */
+    getGlobalOutputsByType(type) {
+      const outputs = [];
+
+      for (let i = 0; i < this.nodes.length; i += 1) {
+        const node = this.nodes[i];
+        for (const name in node.outputs) {
+          const output = node.outputs[name];
+          if (output.global && output.type === type) {
+            outputs.push(output);
+          }
+        }
+      }
+
+      return outputs;
+    }
+
+    /**
     * returns an array of all nodes in this flow that contain at least one global output
     * @returns {Node[]} list of nodes
     */
