@@ -151,16 +151,20 @@ module.exports = (XIBLE) => {
      */
     hasOtherAssignments(assignsIoName, assignsIoType) {
       const ioType = this instanceof XIBLE.NodeInput;
-      return this.node.getInputs()
-      .concat(this.node.getOutputs())
-      .filter(io => io !== this)
-      .some(io =>
-        io.connectors.length &&
-        (
-          io[ioType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(this.name) ||
-          (assignsIoName && io[assignsIoType ? 'assignsInputTypes' : 'assignsOutputTypes' ].includes(assignsIoName))
-        )
-      );
+      const ios = this.node.getInputs().concat(this.node.getOutputs());
+      for (let i = 0; i < ios.length; i += 1) {
+        const io = ios[i];
+        if (io !== this && io.connectors.length &&
+          (
+            io[ioType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(this.name) ||
+            (assignsIoName && io[assignsIoType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(assignsIoName))
+          )
+        ) {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     setGlobal(global) {
