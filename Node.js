@@ -88,9 +88,13 @@ module.exports = (XIBLE) => {
       return this.data[attr];
     }
 
-    getEditorContent() {
-      const req = XIBLE.http.request('GET', `/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
-      return req.toString();
+    async getEditorContent() {
+      if (!this._editorContentReqPromise) {
+        const req = XIBLE.http.request('GET', `/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
+        this._editorContentReqPromise = req.toString();
+      }
+
+      return this._editorContentReqPromise;
     }
 
     setPosition(left = 0, top = 0) {
