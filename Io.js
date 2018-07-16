@@ -282,6 +282,16 @@ module.exports = (XIBLE) => {
         delete this.node.outputs[this.name];
       }
     }
+
+    toJSON() {
+      return {
+        _id: this._id,
+        name: this.name,
+        type: this.type,
+        global: this.global,
+        hidden: this.hidden
+      };
+    }
   }
 
   return Io;

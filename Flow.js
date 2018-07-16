@@ -224,35 +224,7 @@ module.exports = (XIBLE) => {
     // and it should be toJSON().
     toJson(nodes, connectors) {
       // the nodes
-      const NODE_WHITE_LIST = ['_id', 'name', 'type', 'left', 'top', 'inputs', 'outputs', 'hidden', 'global'];
-      let dataObject;
-      let inputsObject;
-      let outputsObject;
-      const nodeJson = JSON.stringify(nodes || this.nodes, function jsonStringify(key, value) {
-        switch (key) {
-          case 'inputs':
-            inputsObject = value;
-            return value;
-
-          case 'outputs':
-            outputsObject = value;
-            return value;
-
-          case 'data':
-            if (this !== inputsObject && this !== outputsObject) {
-              dataObject = value;
-              return value;
-            }
-
-          default: // eslint-disable-line no-fallthrough
-            if (this !== inputsObject && this !== outputsObject && this !== dataObject
-              && key && isNaN(key) && NODE_WHITE_LIST.indexOf(key) === -1
-            ) {
-              return; // eslint-disable-line consistent-return
-            }
-            return value;
-        }
-      });
+      const nodeJson = JSON.stringify(nodes || this.nodes);
 
       // the connectors
       const CONNECTOR_WHITE_LIST = ['_id', 'origin', 'destination', 'type', 'hidden'];

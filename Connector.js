@@ -77,6 +77,15 @@ module.exports = () => {
       this.setOrigin(null);
       this.setDestination(null);
     }
+
+    toJSON() {
+      const conn = Object.assign({}, this);
+      delete conn.node;
+      delete conn.flow;
+      delete conn.flowInstance;
+
+      return conn;
+    }
   }
 
   return Connector;
