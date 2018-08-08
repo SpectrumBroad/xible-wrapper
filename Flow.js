@@ -16,15 +16,25 @@ module.exports = (XIBLE) => {
 
   class Flow extends EventEmitter {
     constructor(obj) {
-      if (obj && obj._id && constructed[obj._id]) {
-        return constructed[obj._id];
-      }
-
       super();
+
+      if (obj && obj._id && this.constructor === Flow) {
+        if (constructed[obj._id]) {
+          return constructed[obj._id];
+        }
+
+        if (!constructed[obj._id]) {
+          constructed[obj._id] = this;
+        }
+      }
 
       this._id = null;
       this.runnable = true;
       this._instances = null;
+
+      if (obj) {
+        Object.assign(this, obj);
+      }
 
       XIBLE.on('message', (json) => {
         if (
@@ -44,14 +54,6 @@ module.exports = (XIBLE) => {
 
         this.emit(json.method.substring(11), json);
       });
-
-      if (obj) {
-        Object.assign(this, obj);
-      }
-
-      if (this._id) {
-        constructed[this._id] = this;
-      }
 
       this.removeAllListeners();
 
