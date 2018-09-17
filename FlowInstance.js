@@ -45,6 +45,9 @@ module.exports = (XIBLE) => {
       this.on('delete', () => {
         delete constructed[this._id];
       });
+
+      // to prevent this from throwing.
+      this.on('error', () => {});
     }
 
     start() {
