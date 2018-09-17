@@ -7,20 +7,22 @@ module.exports = (XIBLE) => {
 
   class FlowInstance extends EventEmitter {
     constructor(obj) {
-      if (obj && obj._id && constructed[obj._id]) {
-        return constructed[obj._id];
-      }
-
       super();
+
+      if (obj && obj._id && this.constructor === FlowInstance) {
+        if (constructed[obj._id]) {
+          return constructed[obj._id];
+        }
+
+        if (!constructed[obj._id]) {
+          constructed[obj._id] = this;
+        }
+      }
 
       this.state = FlowInstance.STATE_STOPPED;
 
       if (obj) {
         Object.assign(this, obj);
-      }
-
-      if (this._id) {
-        constructed[this._id] = this;
       }
 
       XIBLE.on('message', (json) => {
