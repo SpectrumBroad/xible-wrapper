@@ -38,9 +38,10 @@ module.exports = (XIBLE) => {
 
       XIBLE.on('message', (json) => {
         if (
-          json.method.substring(0, 11) !== 'xible.flow.' ||
-          !json.flow ||
-          json.flow._id !== this._id
+          json.method.substring(0, 11) !== 'xible.flow.'
+          || json.method.substring(0, 20) === 'xible.flow.instance.'
+          || !json.flow
+          || json.flow._id !== this._id
         ) {
           return;
         }
