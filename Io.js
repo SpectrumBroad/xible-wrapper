@@ -227,7 +227,7 @@ module.exports = (XIBLE) => {
           return true;
         }
 
-        return destinationTypeDef.matches(originTypeDef);
+        return destinationTypeDef.matches(originTypeDef) || originTypeDef.matches(destinationTypeDef);
       });
     }
 
