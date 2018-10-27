@@ -19,7 +19,9 @@ module.exports = (XIBLE) => {
     matches(typeDef) {
       if (typeDef === this) {
         return true;
-      } else if (!typeDef || !typeDef.extends) {
+      }
+
+      if (!typeDef || !typeDef.extends) {
         return false;
       }
 
@@ -31,7 +33,9 @@ module.exports = (XIBLE) => {
         }
 
         return this.matches(extendsTypeDef);
-      } else if (Array.isArray(typeDef.extends)) {
+      }
+
+      if (Array.isArray(typeDef.extends)) {
         for (let i = 0; i < typeDef.extends.length; i += 1) {
           const extendsTypeDef = TYPE_DEFS[typeDef.extends[i]];
           if (!extendsTypeDef) {
