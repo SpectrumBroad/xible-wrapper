@@ -12,6 +12,17 @@ module.exports = (XIBLE) => {
       req.timeout = 120000; // give this a high timeout because installing may take a while
       return req.send();
     }
+
+    static searchFlows(searchString) {
+      const req = XIBLE.http.request('GET', `/api/registry/flows?search=${encodeURIComponent(searchString)}`);
+      return req.toJson();
+    }
+
+    static installFlowByName(flowName) {
+      const req = XIBLE.http.request('PATCH', `/api/registry/flows/${encodeURIComponent(flowName)}/install`);
+      req.timeout = 120000; // give this a high timeout because installing may take a while
+      return req.send();
+    }
   }
 
   return Registry;
