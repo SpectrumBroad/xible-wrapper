@@ -5,15 +5,6 @@ module.exports = (XIBLE) => {
 
   const constructed = {};
 
-  // clean up constructed list on reconnect
-  XIBLE.on('open', async () => {
-    for (const flowId in constructed) {
-      if (!await Flow.getById(flowId)) {
-        delete constructed[flowId];
-      }
-    }
-  });
-
   class Flow extends EventEmitter {
     constructor(obj) {
       super();
@@ -36,7 +27,7 @@ module.exports = (XIBLE) => {
         Object.assign(this, obj);
       }
 
-      XIBLE.on('message', (json) => {
+      const xibleMessageListener = (json) => {
         if (
           json.method.substring(0, 11) !== 'xible.flow.'
           || json.method.substring(0, 20) === 'xible.flow.instance.'
@@ -54,11 +45,13 @@ module.exports = (XIBLE) => {
         json.flow = this;
 
         this.emit(json.method.substring(11), json);
-      });
+      }
+      XIBLE.on('message', xibleMessageListener);
 
       this.removeAllListeners();
 
       this.on('delete', () => {
+        XIBLE.removeListener('message', xibleMessageListener);
         delete constructed[this._id];
       });
 
@@ -401,6 +394,15 @@ module.exports = (XIBLE) => {
       });
     }
   }
+
+  // clean up constructed list on reconnect
+  XIBLE.on('open', async () => {
+    for (const flowId in constructed) {
+      if (!await Flow.getById(flowId)) {
+        delete constructed[flowId];
+      }
+    }
+  });
 
   return Flow;
 };

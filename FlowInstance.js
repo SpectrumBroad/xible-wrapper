@@ -25,7 +25,7 @@ module.exports = (XIBLE) => {
         Object.assign(this, obj);
       }
 
-      XIBLE.on('message', (json) => {
+      const xibleMessageListener = (json) => {
         if (
           json.method.substring(0, 20) !== 'xible.flow.instance.'
           || !json.flowInstance
@@ -43,9 +43,11 @@ module.exports = (XIBLE) => {
         json.flowInstance = this;
 
         this.emit(json.method.substring(20), json);
-      });
+      }
+      XIBLE.on('message', xibleMessageListener);
 
       this.on('delete', () => {
+        XIBLE.removeListener('message', xibleMessageListener);
         delete constructed[this._id];
       });
 
