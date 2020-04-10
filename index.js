@@ -29,6 +29,7 @@ class XibleWrapper extends EventEmitter {
 
     this.Flow = require('./Flow.js')(this);
     this.FlowInstance = require('./FlowInstance.js')(this);
+    this.NodePack = require('./NodePack.js')(this);
     this.Node = require('./Node.js')(this);
     this.NodeIo = require('./Io.js')(this);
     this.NodeInput = require('./Input.js')(this);
