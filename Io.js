@@ -38,7 +38,7 @@ module.exports = (XIBLE) => {
       const outGoing = this instanceof XIBLE.NodeOutput;
       this.on('attach', (conn) => {
         // ignore if this io has a proper type
-        if (this.structureType) {
+        if (this.structureType !== null) {
           return;
         }
 
@@ -49,11 +49,11 @@ module.exports = (XIBLE) => {
 
         // ignore if there's still a connector with a type set
         if (
-          this.connectors.some(connector =>
+          this.connectors.some((connector) => (
             connector !== conn &&
             connector[outGoing ? 'destination' : 'origin'] &&
             connector[outGoing ? 'destination' : 'origin'].type
-          )
+          ))
         ) {
           return;
         }
@@ -77,10 +77,10 @@ module.exports = (XIBLE) => {
 
         // ignore if there's still a connector with a type set
         if (
-          this.connectors.some(connector =>
+          this.connectors.some((connector) => (
             connector[outGoing ? 'destination' : 'origin'] &&
             connector[outGoing ? 'destination' : 'origin'].type
-          )
+          ))
         ) {
           return;
         }
