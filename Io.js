@@ -70,6 +70,11 @@ module.exports = (XIBLE) => {
       });
 
       this.on('detach', () => {
+        // ignore if this io has a proper type
+        if (this.structureType !== null) {
+          return;
+        }
+
         // ignore if there's still a connector with a type set
         if (
           this.connectors.some(connector =>
