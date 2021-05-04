@@ -109,7 +109,7 @@ module.exports = (XIBLE) => {
         throw new Error('"nodes" argument missing');
       }
 
-      this._lastDirectPromise = async () => {
+      this._lastDirectPromise = (async () => {
         nodes = nodes.map((node) => ({
           _id: node._id,
           data: node.data
@@ -125,7 +125,7 @@ module.exports = (XIBLE) => {
           this._lastDirectPromise = null;
           throw err;
         }
-      };
+      })();
 
       return this._lastDirectPromise;
     }
