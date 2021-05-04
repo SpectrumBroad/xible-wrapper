@@ -17,7 +17,7 @@ module.exports = (XIBLE) => {
       // copy data
       this.data = null;
       if (obj.data && !ignoreData) {
-        this.data = Object.assign({}, obj.data);
+        this.data = { ...obj.data };
       } else {
         this.data = {};
       }
@@ -57,7 +57,7 @@ module.exports = (XIBLE) => {
     static getAllInputObjectNodes(node) {
       const resultNodes = [node];
       const resultConnectors = [];
-      const objectInputs = node.getInputs().filter(input => input.type !== 'trigger');
+      const objectInputs = node.getInputs().filter((input) => input.type !== 'trigger');
       objectInputs.forEach((objectInput) => {
         resultConnectors.push(...objectInput.connectors);
         objectInput.connectors.forEach((connector) => {
@@ -175,16 +175,16 @@ module.exports = (XIBLE) => {
 
     getInputs() {
       return Object.keys(this.inputs)
-      .map(key => this.inputs[key]);
+        .map((key) => this.inputs[key]);
     }
 
     getOutputs() {
       return Object.keys(this.outputs)
-      .map(key => this.outputs[key]);
+        .map((key) => this.outputs[key]);
     }
 
     getGlobalOutputs() {
-      return this.getOutputs().filter(output => output.global);
+      return this.getOutputs().filter((output) => output.global);
     }
 
     getInputsByType(type = null) {

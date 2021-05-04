@@ -33,8 +33,8 @@ module.exports = () => {
     filterDuplicateConnectors(type, end) {
       const otherType = (type === 'origin' ? 'destination' : 'origin');
       end.connectors
-      .filter(conn => conn[otherType] === this[otherType])
-      .forEach(conn => conn.delete());
+        .filter((conn) => conn[otherType] === this[otherType])
+        .forEach((conn) => conn.delete());
     }
 
     setEnd(type, end, noEmit) {
@@ -79,7 +79,7 @@ module.exports = () => {
     }
 
     toJSON() {
-      const conn = Object.assign({}, this);
+      const conn = { ...this };
       delete conn.node;
       delete conn.flow;
       delete conn.flowInstance;

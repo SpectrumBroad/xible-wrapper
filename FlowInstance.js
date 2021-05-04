@@ -43,7 +43,7 @@ module.exports = (XIBLE) => {
         json.flowInstance = this;
 
         this.emit(json.method.substring(20), json);
-      }
+      };
       XIBLE.on('message', xibleMessageListener);
 
       this.on('delete', () => {
@@ -93,7 +93,7 @@ module.exports = (XIBLE) => {
 
         if (!this._lastPostDirectPromise) {
           this._lastPostDirectPromise = this._lastDirectPromise
-          .then(() => this._lastPostDirectFunction());
+            .then(() => this._lastPostDirectFunction());
         }
 
         return this._lastPostDirectPromise;
@@ -109,24 +109,23 @@ module.exports = (XIBLE) => {
         throw new Error('"nodes" argument missing');
       }
 
-      this._lastDirectPromise = new Promise(async (resolve, reject) => {
-        nodes = nodes.map(node => ({
+      this._lastDirectPromise = async () => {
+        nodes = nodes.map((node) => ({
           _id: node._id,
           data: node.data
         }));
 
         try {
           await XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/direct`)
-          .toString(nodes);
+            .toString(nodes);
           this._lastDirectPromise = null;
 
           this.emit('direct');
-          resolve();
         } catch (err) {
           this._lastDirectPromise = null;
-          reject(err);
+          throw err;
         }
-      });
+      };
 
       return this._lastDirectPromise;
     }

@@ -71,15 +71,15 @@ module.exports = (XIBLE) => {
     static getAll() {
       const req = XIBLE.http.request('GET', '/api/typedefs');
       return req.toObject(TypeDef)
-      .then((typeDefs) => {
-        TYPE_DEFS = {};
-        Object.keys(typeDefs)
-        .forEach((typeDefName) => {
-          TYPE_DEFS[typeDefName] = new TypeDef(typeDefs[typeDefName]);
-        });
+        .then((typeDefs) => {
+          TYPE_DEFS = {};
+          Object.keys(typeDefs)
+            .forEach((typeDefName) => {
+              TYPE_DEFS[typeDefName] = new TypeDef(typeDefs[typeDefName]);
+            });
 
-        return TYPE_DEFS;
-      });
+          return TYPE_DEFS;
+        });
     }
   }
 

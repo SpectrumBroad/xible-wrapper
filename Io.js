@@ -50,9 +50,9 @@ module.exports = (XIBLE) => {
         // ignore if there's still a connector with a type set
         if (
           this.connectors.some((connector) => (
-            connector !== conn &&
-            connector[outGoing ? 'destination' : 'origin'] &&
-            connector[outGoing ? 'destination' : 'origin'].type
+            connector !== conn
+            && connector[outGoing ? 'destination' : 'origin']
+            && connector[outGoing ? 'destination' : 'origin'].type
           ))
         ) {
           return;
@@ -78,8 +78,8 @@ module.exports = (XIBLE) => {
         // ignore if there's still a connector with a type set
         if (
           this.connectors.some((connector) => (
-            connector[outGoing ? 'destination' : 'origin'] &&
-            connector[outGoing ? 'destination' : 'origin'].type
+            connector[outGoing ? 'destination' : 'origin']
+            && connector[outGoing ? 'destination' : 'origin'].type
           ))
         ) {
           return;
@@ -159,10 +159,10 @@ module.exports = (XIBLE) => {
       const ios = this.node.getInputs().concat(this.node.getOutputs());
       for (let i = 0; i < ios.length; i += 1) {
         const io = ios[i];
-        if (io !== this && io.connectors.length &&
-          (
-            io[ioType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(this.name) ||
-            (assignsIoName && io[assignsIoType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(assignsIoName))
+        if (io !== this && io.connectors.length
+          && (
+            io[ioType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(this.name)
+            || (assignsIoName && io[assignsIoType ? 'assignsInputTypes' : 'assignsOutputTypes'].includes(assignsIoName))
           )
         ) {
           return true;
@@ -219,21 +219,21 @@ module.exports = (XIBLE) => {
     */
     matchesTypeDef(connector) {
       return XIBLE.TypeDef.getAllCached()
-      .then((typeDefs) => {
-        if (!connector.origin || !connector.destination) {
-          return false;
-        }
+        .then((typeDefs) => {
+          if (!connector.origin || !connector.destination) {
+            return false;
+          }
 
-        const outGoing = this instanceof XIBLE.NodeOutput;
-        const originTypeDef = typeDefs[(outGoing ? this.type : connector.origin.type)];
-        const destinationTypeDef = typeDefs[(outGoing ? connector.destination.type : this.type)];
+          const outGoing = this instanceof XIBLE.NodeOutput;
+          const originTypeDef = typeDefs[(outGoing ? this.type : connector.origin.type)];
+          const destinationTypeDef = typeDefs[(outGoing ? connector.destination.type : this.type)];
 
-        if (!destinationTypeDef || !originTypeDef) {
-          return true;
-        }
+          if (!destinationTypeDef || !originTypeDef) {
+            return true;
+          }
 
-        return destinationTypeDef.matches(originTypeDef) || originTypeDef.matches(destinationTypeDef);
-      });
+          return destinationTypeDef.matches(originTypeDef) || originTypeDef.matches(destinationTypeDef);
+        });
     }
 
     verifyConnectors() {
@@ -254,11 +254,11 @@ module.exports = (XIBLE) => {
         }
 
         this.matchesTypeDef(connector)
-        .then((matchesTypeDef) => {
-          if (!matchesTypeDef) {
-            connector.delete();
-          }
-        });
+          .then((matchesTypeDef) => {
+            if (!matchesTypeDef) {
+              connector.delete();
+            }
+          });
       });
     }
 

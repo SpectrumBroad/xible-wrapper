@@ -20,8 +20,8 @@
     "wrapper"
   ],
   "scripts": {
-    "browserify": "gulp browserify",
-    "prepublishOnly": "gulp browserify && npm shrinkwrap --only=prod"
+    "build": "gulp build",
+    "prepublishOnly": "gulp build && npm shrinkwrap --only=prod"
   },
   "dependencies": {
     "oohttp": "*",
@@ -29,11 +29,9 @@
   },
   "devDependencies": {
     "browserify": "*",
-    "eslint": "*",
-    "eslint-config-airbnb": "*",
-    "eslint-plugin-import": "*",
-    "eslint-plugin-jsx-a11y": "*",
-    "eslint-plugin-react": "*",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
     "gulp": "*",
     "vinyl-source-stream": "*"
   },
