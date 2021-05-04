@@ -73,17 +73,17 @@ module.exports = (XIBLE) => {
       };
     }
 
-    setData(attr, value) {
+    setData(attr, value, src = this) {
       if (typeof value === 'undefined') {
         Object.assign(this.data, attr);
 
         Object.keys(attr)
           .forEach((key) => {
-            this.emit('setdata', key, attr[key]);
+            this.emit('setdata', key, attr[key], src);
           });
       } else {
         this.data[attr] = value;
-        this.emit('setdata', attr, value);
+        this.emit('setdata', attr, value, src);
       }
 
       return this;
