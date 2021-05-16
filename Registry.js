@@ -18,8 +18,8 @@ module.exports = (XIBLE) => {
       return req.toJson();
     }
 
-    static installFlowByName(flowName) {
-      const req = XIBLE.http.request('PATCH', `/api/registry/flows/${encodeURIComponent(flowName)}/install`);
+    static installFlowByPublisherAndName(publishUserName, flowName) {
+      const req = XIBLE.http.request('PATCH', `/api/registry/users/${encodeURIComponent(publishUserName)}/flows/${encodeURIComponent(flowName)}/install`);
       req.timeout = 120000; // give this a high timeout because installing may take a while
       return req.send();
     }
