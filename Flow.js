@@ -144,6 +144,15 @@ module.exports = (XIBLE) => {
       return flows;
     }
 
+    publish(altName) {
+      if (!this._id) {
+        return Promise.resolve();
+      }
+
+      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/publish`);
+      return req.send(altName != null ? { altName } : undefined);
+    }
+
     delete() {
       if (!this._id) {
         return Promise.resolve();
