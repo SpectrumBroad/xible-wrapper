@@ -171,6 +171,11 @@ class XibleWrapper extends EventEmitter {
     return Promise.resolve(this);
   }
 
+  getActiveFlowStoreType() {
+    const req = this.http.request('GET', '/api/activeFlowStoreType');
+    return req.toJson();
+  }
+
   /**
   * This method will force an automatic reconnect of the socket every <timeout> after a close event
   * @param {Number} timeout the amount of milliseconds after 'close' before retrying
