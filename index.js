@@ -72,7 +72,7 @@ class XibleWrapper extends EventEmitter {
   }
 
   getServerDate() {
-    const req = this.http.request('GET', '/api/serverDate');
+    const req = this.http.request('GET', 'api/serverDate');
     return req.toJson();
   }
 
@@ -81,7 +81,7 @@ class XibleWrapper extends EventEmitter {
   }
 
   getPersistentWebSocketMessages() {
-    const req = this.http.request('GET', '/api/persistentWebSocketMessages');
+    const req = this.http.request('GET', 'api/persistentWebSocketMessages');
     return req.toJson();
   }
 
@@ -172,7 +172,7 @@ class XibleWrapper extends EventEmitter {
   }
 
   getActiveFlowStoreType() {
-    const req = this.http.request('GET', '/api/activeFlowStoreType');
+    const req = this.http.request('GET', 'api/activeFlowStoreType');
     return req.toJson();
   }
 
