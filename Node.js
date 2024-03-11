@@ -50,7 +50,7 @@ module.exports = (XIBLE) => {
     }
 
     static async getAll() {
-      const req = XIBLE.http.request('GET', '/api/nodes');
+      const req = XIBLE.http.request('GET', 'api/nodes');
       return req.toObjectMap(Node);
     }
 
@@ -95,7 +95,7 @@ module.exports = (XIBLE) => {
 
     async getEditorContent() {
       if (!this._editorContentReqPromise) {
-        const req = XIBLE.http.request('GET', `/api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
+        const req = XIBLE.http.request('GET', `api/nodes/${encodeURIComponent(this.name)}/editor/index.htm`);
         this._editorContentReqPromise = req.toString();
       }
 

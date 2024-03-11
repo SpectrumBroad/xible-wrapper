@@ -69,7 +69,7 @@ module.exports = (XIBLE) => {
     * @returns {Promise.<TypeDef[]>}
     */
     static getAll() {
-      const req = XIBLE.http.request('GET', '/api/typedefs');
+      const req = XIBLE.http.request('GET', 'api/typedefs');
       return req.toObject(TypeDef)
         .then((typeDefs) => {
           TYPE_DEFS = {};

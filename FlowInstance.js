@@ -60,7 +60,7 @@ module.exports = (XIBLE) => {
         return Promise.reject('no id');
       }
 
-      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/start`);
+      const req = XIBLE.http.request('PATCH', `api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/start`);
       return req.send();
     }
 
@@ -69,7 +69,7 @@ module.exports = (XIBLE) => {
         return Promise.reject('no id');
       }
 
-      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/stop`);
+      const req = XIBLE.http.request('PATCH', `api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/stop`);
       return req.send();
     }
 
@@ -78,7 +78,7 @@ module.exports = (XIBLE) => {
         return Promise.reject('no id');
       }
 
-      const req = XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}`);
+      const req = XIBLE.http.request('DELETE', `api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}`);
       return req.send();
     }
 
@@ -116,7 +116,7 @@ module.exports = (XIBLE) => {
         }));
 
         try {
-          await XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/direct`)
+          await XIBLE.http.request('PATCH', `api/flows/${encodeURIComponent(this.flowId)}/instances/${encodeURIComponent(this._id)}/direct`)
             .toString(nodes);
           this._lastDirectPromise = null;
 

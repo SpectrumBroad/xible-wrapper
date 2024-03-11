@@ -10,12 +10,12 @@ module.exports = (XIBLE) => {
     }
 
     static async getByName(nodePackName) {
-      return XIBLE.http.request('GET', `/api/nodepacks/${encodeURIComponent(nodePackName)}`)
-      .toObject(NodePack);
+      return XIBLE.http.request('GET', `api/nodepacks/${encodeURIComponent(nodePackName)}`)
+        .toObject(NodePack);
     }
 
     static async getAll() {
-      const req = XIBLE.http.request('GET', '/api/nodepacks');
+      const req = XIBLE.http.request('GET', 'api/nodepacks');
       return req.toObjectMap(NodePack);
     }
 
@@ -24,7 +24,7 @@ module.exports = (XIBLE) => {
         return false;
       }
 
-      const req = XIBLE.http.request('DELETE', `/api/nodepacks/${encodeURIComponent(this.name)}`);
+      const req = XIBLE.http.request('DELETE', `api/nodepacks/${encodeURIComponent(this.name)}`);
       await req.send();
 
       return true;

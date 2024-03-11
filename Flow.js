@@ -120,17 +120,17 @@ module.exports = (XIBLE) => {
     }
 
     static async validatePermissions() {
-      return XIBLE.http.request('GET', '/api/validateFlowPermissions')
+      return XIBLE.http.request('GET', 'api/validateFlowPermissions')
         .toJson();
     }
 
     static async getById(id) {
-      return XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(id)}`)
+      return XIBLE.http.request('GET', `api/flows/${encodeURIComponent(id)}`)
         .toObject(Flow);
     }
 
     static async getAll() {
-      const req = XIBLE.http.request('GET', '/api/flows');
+      const req = XIBLE.http.request('GET', 'api/flows');
       const flows = await req.toObjectMap(Flow);
 
       // clear any non existing flows.
@@ -149,7 +149,7 @@ module.exports = (XIBLE) => {
         return Promise.resolve();
       }
 
-      const req = XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/publish`);
+      const req = XIBLE.http.request('PATCH', `api/flows/${encodeURIComponent(this._id)}/publish`);
       return req.send(altName != null ? { altName } : undefined);
     }
 
@@ -158,7 +158,7 @@ module.exports = (XIBLE) => {
         return Promise.resolve();
       }
 
-      const req = XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this._id)}`);
+      const req = XIBLE.http.request('DELETE', `api/flows/${encodeURIComponent(this._id)}`);
       return req.send();
     }
 
@@ -168,9 +168,9 @@ module.exports = (XIBLE) => {
         let req;
 
         if (!this._id || asNew) {
-          req = XIBLE.http.request('POST', '/api/flows');
+          req = XIBLE.http.request('POST', 'api/flows');
         } else {
-          req = XIBLE.http.request('PUT', `/api/flows/${encodeURIComponent(this._id)}`);
+          req = XIBLE.http.request('PUT', `api/flows/${encodeURIComponent(this._id)}`);
         }
 
         req.toObject(Object, json)
@@ -193,7 +193,7 @@ module.exports = (XIBLE) => {
         }));
       }
 
-      return XIBLE.http.request('POST', `/api/flows/${encodeURIComponent(this._id)}/instances`)
+      return XIBLE.http.request('POST', `api/flows/${encodeURIComponent(this._id)}/instances`)
         .toObject(XIBLE.FlowInstance, {
           params,
           directNodes,
@@ -203,7 +203,7 @@ module.exports = (XIBLE) => {
 
     async getInstances() {
       if (!this._instances) {
-        this._instances = await XIBLE.http.request('GET', `/api/flows/${encodeURIComponent(this._id)}/instances`)
+        this._instances = await XIBLE.http.request('GET', `api/flows/${encodeURIComponent(this._id)}/instances`)
           .toObjectArray(XIBLE.FlowInstance);
       }
 
@@ -216,12 +216,12 @@ module.exports = (XIBLE) => {
     }
 
     stopAllInstances() {
-      return XIBLE.http.request('PATCH', `/api/flows/${encodeURIComponent(this._id)}/stop`)
+      return XIBLE.http.request('PATCH', `api/flows/${encodeURIComponent(this._id)}/stop`)
         .send();
     }
 
     deleteAllInstances() {
-      return XIBLE.http.request('DELETE', `/api/flows/${encodeURIComponent(this._id)}/instances`)
+      return XIBLE.http.request('DELETE', `api/flows/${encodeURIComponent(this._id)}/instances`)
         .send();
     }
 
